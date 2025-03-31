@@ -6,11 +6,7 @@
 - [How to install the tools?](#how-to-install-the-tools)
     - [Option 1 - manual installation](#option-1-manual-installation)
     - [Option 2 - with devcontainer](#option-2-with-devcontainer)
-- [How to start a local Kubernetes cluster?](#how-to-start-a-local-kubernetes-cluster)
-- [Installation checks](#installation-checks)
-    - [kubectl](#kubectl)
-    - [k9s](#k9s)
-
+- [Video lesson](#video-lesson)
 
 ## Why do we need so many tools?
 
@@ -51,8 +47,7 @@ In either case, you will need to have
 > is to use the devcontainer (option 2), that comes with all the tools already installed.
 > Otherwise, you will have to install all the tools manually (option 1), and that can be a pain.
 >
-> If you still want to try the manual installation (option 1), I recommend you first [install WSL
-(https://learn.microsoft.com/en-us/windows/wsl/install) (Windows Subsystem for Linux) and then install the tools in the WSL terminal.
+> If you still want to try the manual installation (option 1), I recommend you first [install WSL](https://learn.microsoft.com/en-us/windows/wsl/install) (Windows Subsystem for Linux) and then install the tools in the WSL terminal.
 > With WSL you can run Linux commands from the Windows command line, so your chances of running into issues will be reduced.
 
 
@@ -66,11 +61,11 @@ Tools for developing in Python:
 
 - [uv](https://docs.astral.sh/uv/) as the Python package and project manager. It's quickly becoming the de facto standard for Python, so you better get used to it. Using `uv` workspaces we build a monorepo, with all our services, and also shared libraries with code that can be reused across services.
 
-With `uv` we can also install
+    With `uv` we can also install
 
-    - the exact version of the Python interpreter we want to use. In this course we will be using Python 3.12, because it is neither too old (so we can use the latest features of the language) nor too new (so we don't have to face incompatibilities with the libraries we will use).
+    * the exact version of the Python interpreter we want to use. In this course we will be using Python 3.12, because it is neither too old (so we can use the latest features of the language) nor too new (so we don't have to face incompatibilities with the libraries we will use).
 
-    - tools for linting and formatting, like `ruff` or `pre-commit`.
+    * tools for linting and formatting, like `ruff` or `pre-commit`.
 
 - [make](https://www.gnu.org/software/make/) a build automation tool. In the course we will use
 it as an alias for common commands, so we don't have to type/remember them all the time.
@@ -117,39 +112,8 @@ Once installed, you can open the Command Palette (Ctrl+Shift+P or Cmd+Shift+P on
 
 And voila, you will have a development environment ready to go.
 
-## How to start a local Kubernetes cluster?
 
-> #### Before you start, check the docker engine is up and running
->
-> ```sh
-> docker run hello-world
-> ```
->
-> If you see the message `Hello from Docker!` then you are good to go.
->
-> If you see an error, and you have Docker Desktop installed, make sure it is running.
+## Video lesson
 
-### TLDR
+[👉 Link to video](https://www.realworldml.net/products/building-a-real-time-ml-system-together-cohort-4/categories/2157289689/posts/2186425574)
 
-All the steps to create a local Kubernetes cluster are summarized in the `create_cluster.sh` script, that you can run as follows:
-
-```sh
-cd deployments/dev/kind # Go to the kind directory
-chmod +x create_cluster.sh # Make the script executable
-./create_cluster.sh # Run the script
-```
-
-What's happening under the hood?
-
-### Create a docker network
-
-```sh
-docker network create --subnet 172.100.0.0/16 rwml-34fa-network
-```
-
-### Create and start the kind cluster
-We use a basic configuration for the kind cluster, with port mapping enabled, in the `kind-with-portmapping.yaml` file.
-
-```sh
-KIND_EXPERIMENTAL_DOCKER_NETWORK=rwml-34fa-network kind create cluster --config ./kind-with-portmapping.yaml
-```
