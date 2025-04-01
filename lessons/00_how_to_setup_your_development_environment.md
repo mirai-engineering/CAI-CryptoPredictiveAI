@@ -70,7 +70,7 @@ Tools for developing in Python:
 - [make](https://www.gnu.org/software/make/) a build automation tool. In the course we will use
 it as an alias for common commands, so we don't have to type/remember them all the time.
 
-- [psql](https://www.postgresql.org/download/) the command line interface for PostgreSQL. We will use it to interact with our Feature Store (RisingWave, which is based on PostgreSQL) from the terminal.
+- [psql](https://docs.risingwave.com/deploy/install-psql-without-postgresql) the command line interface for PostgreSQL. We will use it to interact with our Feature Store (RisingWave, which is based on PostgreSQL) from the terminal.
 
 
 Tools for working with Kubernetes:
