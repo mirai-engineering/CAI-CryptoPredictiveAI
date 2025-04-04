@@ -35,7 +35,7 @@ spec:
     spec:
       containers:
         - name: agnhost
-          image: ghcr.io/mariusrugan/agnhost:0.1.1-beta.1743796567 # {"$imagepolicy": "flux-system:rwml"}
+          image: ghcr.io/mariusrugan/agnhost:0.1.1-beta.1743796567 # {"$imagepolicy": "rwml:rwml"}
           imagePullPolicy: IfNotPresent
           args:
             - netexec
