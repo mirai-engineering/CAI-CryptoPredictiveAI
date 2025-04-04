@@ -1,5 +1,5 @@
 ---
-apiVersion: image.toolkit.fluxcd.io/v1beta1
+apiVersion: image.toolkit.fluxcd.io/v1beta2
 kind: ImageUpdateAutomation
 metadata:
   name: rwml
@@ -20,7 +20,5 @@ spec:
   sourceRef:
     kind: GitRepository
     name: rwml-c4-k8s-workloads
-    namespace: flux-system
   update:
     path: ./deployments/prod
-    strategy: Setters
