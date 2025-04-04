@@ -5,7 +5,7 @@ metadata:
   name: rwml
   namespace: flux-system
 spec:
-  image: registry.k8s.io/e2e-test-images/agnhost
+  image: ghcr.io/mariusrugan/agnhost
   interval: 2m
   provider: generic
   # secretRef:
