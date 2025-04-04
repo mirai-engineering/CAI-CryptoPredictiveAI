@@ -14,6 +14,7 @@ spec:
   sourceRef:
     kind: GitRepository
     name: rwml-c4-k8s-workloads
+    namespace: flux-system
   # decryption:
   #   provider: sops
   #   secretRef:
