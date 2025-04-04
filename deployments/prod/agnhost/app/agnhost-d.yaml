@@ -10,7 +10,6 @@ metadata:
   labels:
     app: agnhost
 spec:
-
   selector:
     matchLabels:
       app: agnhost
@@ -36,7 +35,7 @@ spec:
     spec:
       containers:
         - name: agnhost
-          image: registry.k8s.io/e2e-test-images/agnhost:2.40 {"$imagepolicy": "flux-system:rwml"}
+          image: registry.k8s.io/e2e-test-images/agnhost:2.40
           imagePullPolicy: IfNotPresent
           args:
             - netexec
