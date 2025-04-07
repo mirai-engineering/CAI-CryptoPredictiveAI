@@ -19,7 +19,7 @@
     $ nc -vvv localhost 31234
     ```
 
-- [ ] Push some real data to Kafka
+- [x] Push some real data to Kafka
 
 
 ## Questions
