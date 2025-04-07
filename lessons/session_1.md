@@ -1,3 +1,8 @@
+# Session 1
+
+### Table of contents
+
+
 ## Goals for today
 
 - [x] Deploy Kafka in our dev kubernetes cluster.
@@ -43,3 +48,18 @@
 - For installing kafka into kubernetes cluster, are these standard scripts or do we need to modify sometimes?
 
 - The trade producer will be running in the same cluster as the trade producer, so which port should we use?
+
+- Are topic in kafka contains images ?
+
+- Great Pau, can you generate algorithm (step by step ) for websocket.py micro service with all methods you defined to build ,, It will helpful to understand and build ourselves ( basically low level design )?
+
+- @Pau, how do you suggest to utilize Tuesdays or learn effectively after the each session?
+
+## Feedback
+
+- Add diagrams 
+- Use devcontainer
+
+- Push trades image to the ghcr and make it public.
+    - Marius to create basic deployment.yaml with env values for kafka.
+    - A4000
