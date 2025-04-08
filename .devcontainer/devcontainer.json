@@ -10,6 +10,12 @@
     //
     "name": "py-3.12-bookworm",
     "image": "python:3.12-bookworm",
+    "mounts": [
+    // For SSH key mounting (works across platforms):
+    // - Linux: $HOME/.ssh
+    // - macOS: $HOME/.ssh
+    // - Windows: %USERPROFILE%\.ssh
+    "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,readonly"],
 
     //"build": {
     //  "context": "..",
@@ -114,4 +120,5 @@
 
     // 12. Use 'postAttachCommand' to run a command each time a tool attaches to the container successfully.
     // "postAttachCommand": "",
+
 }
