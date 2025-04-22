@@ -44,7 +44,6 @@ def run(
 
 
 if __name__ == '__main__':
-
     from trades.config import config
 
     # create object that can talk to the Kraken API and get us the trade data in real time
