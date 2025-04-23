@@ -24,7 +24,7 @@ deploy-for-dev: build-for-dev push-for-dev
 ################################################################################
 build-and-push-for-prod:
 	export BUILD_DATE=$(date +%s) && \
-	docker buildx build --push --platform linux/amd64 -t ghcr.io/real-world-ml/${service}:0.1.5-beta.${BUILD_DATE} -f docker/${service}.Dockerfile .
+	docker buildx build --push --platform linux/amd64 -t ghcr.io/brunoclbr/${service}:0.1.5-beta.${BUILD_DATE} -f docker/${service}.Dockerfile .
 
 deploy-for-prod:
 	kubectl delete -f deployments/prod/${service}/${service}.yaml --ignore-not-found=true
