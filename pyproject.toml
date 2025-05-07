@@ -8,6 +8,8 @@ dependencies = [
     "candles",
     "loguru>=0.7.3",
     "quixstreams>=3.13.1",
+    "ta-lib>=0.6.3",
+    "technical-indicators",
     "trades",
     "websocket-client>=1.8.0",
 ]
@@ -22,6 +24,7 @@ members = [
 [tool.uv.sources]
 trades = { workspace = true }
 candles = { workspace = true }
+technical-indicators = { workspace = true }
 
 [tool.ruff]
 line-length = 88
