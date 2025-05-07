@@ -32,3 +32,7 @@ echo "Installing RisingWave..."
 chmod 755 ./install_risingwave.sh
 ./install_risingwave.sh
 
+# 8. Install Grafana
+echo "Installing Grafana..."
+chmod +x ./install_grafana.sh
+./install_grafana.sh
