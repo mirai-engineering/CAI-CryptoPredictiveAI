@@ -1,14 +1,21 @@
-# Stage 1: Builder - using an image with uv pre-installed
+########################  Stage 1 – builder  ##########################
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
 
-# Install build dependencies
-RUN apt-get update && apt-get install -y \
-    gcc \
+# Set uv configuration for better performance and Docker compatibility
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+ENV UV_SYSTEM_PYTHON=1
+
+# Install build dependencies for confluent-kafka and ta-lib
+RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
+    librdkafka-dev \
+    libssl-dev \
+    pkg-config \
     wget \
     && rm -rf /var/lib/apt/lists/*
 
-# Install ta-lib
+# Install ta-lib - optimize by combining commands to reduce layers
 ENV TALIB_DIR=/usr/local
 RUN wget https://github.com/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib-0.6.4-src.tar.gz && \
     tar -xzf ta-lib-0.6.4-src.tar.gz && \
@@ -17,77 +24,46 @@ RUN wget https://github.com/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib-0.6.4-
     make -j$(nproc) && \
     make install && \
     cd .. && \
-    rm -rf ta-lib-0.6.4-src.tar.gz ta-lib-0.6.4/
+    rm -rf ta-lib-0.6.4-src.tar.gz ta-lib-0.6.4/ && \
+    ldconfig
 
-# Ensure TA-Lib is linked correctly
-RUN ldconfig
-
-# Install the project into `/app`
+# Set the working directory
 WORKDIR /app
 
-# Enable bytecode compilation and set link mode
-ENV UV_COMPILE_BYTECODE=1
-ENV UV_LINK_MODE=copy
+# Copy the application source
+COPY services/technical_indicators/ .
 
-# Set service name as build argument
-ARG SERVICE_NAME
-ENV SERVICE_NAME=${SERVICE_NAME}
-
-# Copy project configuration files
-COPY pyproject.toml uv.lock ./
-
-# Copy only the required services directories 
-COPY services/${SERVICE_NAME} /app/services/${SERVICE_NAME}
-
-
-# Install build tools if needed for any compile steps
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create virtual environment and install dependencies
+# Install dependencies using uv
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv venv && \
-    # Skip installing main project (which would install all services)
-    # Instead, only install the specific service and its direct dependencies
-    uv pip install -e ./services/${SERVICE_NAME}
+    uv pip install --system -e .
 
-# Stage 2: Runtime image - minimal size
-FROM python:3.12-slim
+########################  Stage 2 – runtime  ##########################
+FROM python:3.12-slim-bookworm
 
-# Install only essential runtime dependencies
+WORKDIR /app
+
+# Copy ALL from /usr/local for proper library linkage
+COPY --from=builder /usr/local/ /usr/local/
+
+# Run ldconfig to update the shared library cache
+RUN ldconfig
+
+# Install runtime dependencies with minimal layer size
 RUN apt-get update && apt-get install -y --no-install-recommends \
+    librdkafka1 \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user for security
-RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+# Copy application files
+COPY services/technical_indicators/ /app/
 
-WORKDIR /app
-
-# Set SERVICE_NAME again for the runtime stage
-# Set service name as build argument
-ARG SERVICE_NAME
-ENV SERVICE_NAME=${SERVICE_NAME}
+# Set environment variables
 ENV PYTHONUNBUFFERED=1
 
-# Copy only the virtual environment
-COPY --from=builder /app/.venv /app/.venv
-
-# Copy only the required service from builder
-COPY --from=builder /app/services/${SERVICE_NAME} /app/services/${SERVICE_NAME}
-
-# Create state directory with appropriate permissions
-# This provides a fallback if no volume is mounted
-RUN mkdir -p /app/state && chown -R appuser:appuser /app/state
-
-# Set up environment
-ENV PATH="/app/.venv/bin:$PATH"
-ENV PYTHONPATH="/app"
-
-# Switch to non-root user
+# Create and use non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
 USER appuser
 
-# Run the service directly
-CMD ["sh", "-c", "python /app/services/${SERVICE_NAME}/src/${SERVICE_NAME}/main.py"]
+# Use exec form for ENTRYPOINT to avoid shell requirement
+ENTRYPOINT ["python", "/app/src/technical_indicators/main.py"]
