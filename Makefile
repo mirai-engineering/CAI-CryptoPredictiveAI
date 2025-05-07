@@ -7,8 +7,14 @@ dev:
 	uv run services/${service}/src/${service}/main.py
 
 # Builds a docker image from a given Dockerfile
+#build-for-dev:
+#	docker build -t ${service}:dev -f docker/${service}.Dockerfile .
+
 build-for-dev:
-	docker build -t ${service}:dev -f docker/${service}.Dockerfile .
+	docker build \
+		--build-arg SERVICE_NAME=${service} \
+		-t ${service}:dev \
+		-f docker/${service}.Dockerfile .
 
 # Push the docker image to the docker registry of our kind cluster
 push-for-dev:
@@ -19,6 +25,10 @@ deploy-for-dev: build-for-dev push-for-dev
 	kubectl delete -f deployments/dev/${service}/${service}.yaml --ignore-not-found=true
 	kubectl apply -f deployments/dev/${service}/${service}.yaml
 
+# workaround for technical_indicators.yaml
+#deploy-for-dev_ti: build-for-dev push-for-dev
+#	kubectl delete -f deployments/dev/${service}/technical-indicators.yaml --ignore-not-found=true
+#	kubectl apply -f deployments/dev/${service}/technical-indicators.yaml
 ################################################################################
 ## Production
 ################################################################################

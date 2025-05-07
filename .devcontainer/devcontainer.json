@@ -25,6 +25,11 @@
     // 1. Use 'forwardPorts' to make a list of ports inside the container available locally.
     // "forwardPorts": []
 
+    // TaLib installation
+    "mounts": ["type=bind,source=${localEnv:HOME}/${localEnv:USERPROFILE}/.ssh,target=/root/.ssh,readonly", "type=bind,source=${localEnv:HOME}/${localEnv:USERPROFILE}/Dev/tools/ta-lib-0.6.4-src.tar.gz,target=/tmp/ta-lib-0.6.4-src.tar.gz,readonly"
+    ],
+
+
     // 2. Use 'mounts' to make a list of local directories available inside the container. More info: https://code.visualstudio.com/remote/advancedcontainers/add-local-file-mount
     "mounts": [
         // For SSH key mounting (works across platforms):
