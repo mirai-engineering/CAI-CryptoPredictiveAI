@@ -4,10 +4,14 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 authors = [
-    { name = "Paulescu", email = "plabartabajo@gmail.com" } 
+    { name = "bruno_clbr", email = "bruno.copa.97@gmail.com" } 
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "loguru>=0.7.3",
+    "quixstreams>=3.13.1",
+    "websocket-client>=1.8.0",
+]
 
 [build-system]
 requires = ["hatchling"]

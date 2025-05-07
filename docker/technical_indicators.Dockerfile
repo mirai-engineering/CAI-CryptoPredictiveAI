@@ -1,6 +1,28 @@
 # Stage 1: Builder - using an image with uv pre-installed
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
 
+# Install build dependencies
+RUN apt-get update && apt-get install -y \
+    gcc \
+    build-essential \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install ta-lib
+ENV TALIB_DIR=/usr/local
+RUN wget https://github.com/ta-lib/ta-lib/releases/download/v0.6.4/ta-lib-0.6.4-src.tar.gz && \
+    tar -xzf ta-lib-0.6.4-src.tar.gz && \
+    cd ta-lib-0.6.4/ && \
+    ./configure --prefix=$TALIB_DIR && \
+    make -j$(nproc) && \
+    make install && \
+    cd .. && \
+    rm -rf ta-lib-0.6.4-src.tar.gz ta-lib-0.6.4/
+
+# Ensure TA-Lib is linked correctly
+RUN ldconfig
+
+# Install the project into `/app`
 WORKDIR /app
 
 # Enable bytecode compilation and set link mode
