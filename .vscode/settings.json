@@ -1,4 +1,10 @@
 {
     "git.ignoreLimitWarning": true,
-    "makefile.configureOnOpen": false
+    "makefile.configureOnOpen": false,
+    "github.copilot.enable": {
+        "*": true,
+        "plaintext": false,
+        "markdown": false,
+        "scminput": false
+    }
 }
