@@ -1,71 +1,56 @@
-# Stage 1: Builder - using an image with uv pre-installed
+########################  Stage 1 – builder  ##########################
 FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim AS builder
+
+# Set uv configuration for better performance and Docker compatibility
+ENV UV_COMPILE_BYTECODE=1
+ENV UV_LINK_MODE=copy
+ENV UV_SYSTEM_PYTHON=1
+
+# Install build dependencies for confluent-kafka
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential \
+    librdkafka-dev \
+    libssl-dev \
+    pkg-config \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the application source
+COPY services/trades/ .
+
+# Install dependencies using uv
+RUN --mount=type=cache,target=/root/.cache/uv \
+    uv pip install --system -e .
+
+# Create state directory with proper permissions
+RUN mkdir -p /app/state && chmod -R 777 /app/state
+
+########################  Stage 2 – runtime  ##########################
+FROM python:3.12-slim-bookworm
 
 WORKDIR /app
 
-# Enable bytecode compilation and set link mode
-ENV UV_COMPILE_BYTECODE=1
-ENV UV_LINK_MODE=copy
-
-# Set service name as build argument
-ARG SERVICE_NAME
-ENV SERVICE_NAME=${SERVICE_NAME}
-
-# Copy project configuration files
-COPY pyproject.toml uv.lock ./
-
-# Copy only the required services directories 
-COPY services/${SERVICE_NAME} /app/services/${SERVICE_NAME}
-
-
-# Install build tools if needed for any compile steps
+# Install runtime dependencies for confluent-kafka
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    gcc \
-    g++ \
-    && rm -rf /var/lib/apt/lists/*
-
-# Create virtual environment and install dependencies
-RUN --mount=type=cache,target=/root/.cache/uv \
-    uv venv && \
-    # Skip installing main project (which would install all services)
-    # Instead, only install the specific service and its direct dependencies
-    uv pip install -e ./services/${SERVICE_NAME}
-
-# Stage 2: Runtime image - minimal size
-FROM python:3.12-slim
-
-# Install only essential runtime dependencies
-RUN apt-get update && apt-get install -y --no-install-recommends \
+    librdkafka1 \
     libssl3 \
     && rm -rf /var/lib/apt/lists/*
 
-# Create a non-root user for security
-RUN groupadd -r appuser && useradd --no-log-init -r -g appuser appuser
+# Copy Python packages from builder
+COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 
-WORKDIR /app
+# Copy application files
+COPY --from=builder /app/ /app/
 
-# Set SERVICE_NAME again for the runtime stage
-# Set service name as build argument
-ARG SERVICE_NAME
-ENV SERVICE_NAME=${SERVICE_NAME}
+# Set environment variables
 ENV PYTHONUNBUFFERED=1
 
-# Copy only the virtual environment
-COPY --from=builder /app/.venv /app/.venv
-
-# Copy only the required service from builder
-COPY --from=builder /app/services/${SERVICE_NAME} /app/services/${SERVICE_NAME}
-
-# Create state directory with appropriate permissions
-# This provides a fallback if no volume is mounted
-RUN mkdir -p /app/state && chown -R appuser:appuser /app/state
-
-# Set up environment
-ENV PATH="/app/.venv/bin:$PATH"
-ENV PYTHONPATH="/app"
-
-# Switch to non-root user
+# Create and use non-root user for security
+RUN useradd -m -u 1000 appuser && \
+    chown -R appuser:appuser /app
 USER appuser
 
-# Run the service directly
-CMD ["sh", "-c", "python /app/services/${SERVICE_NAME}/src/${SERVICE_NAME}/main.py"]
+# Use exec form for ENTRYPOINT to avoid shell requirement
+ENTRYPOINT ["python", "/app/src/trades/main.py"]
