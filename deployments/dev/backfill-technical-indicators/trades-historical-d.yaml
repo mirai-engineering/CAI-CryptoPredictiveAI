@@ -1,0 +1,81 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: trades-historical
+  namespace: rwml
+  labels:
+    app: trades-historical
+spec:
+  # The number of desired Pods
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#replicas
+  replicas: 1
+  #
+  # New Pods become ready or available (ready for at least MinReadySeconds)'
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#min-ready-seconds
+  minReadySeconds: 5
+  #
+  # The number of old ReplicaSets to retain to allow rollback.
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#revision-history-limit
+  revisionHistoryLimit: 2
+  #
+  # Number of seconds you want to wait for your Deployment to progress before the system reports
+  # back that the Deployment has failed progressing
+  # https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#progress-deadline-seconds
+  progressDeadlineSeconds: 60
+  #
+  strategy:
+    rollingUpdate:
+      maxUnavailable: 0
+    type: RollingUpdate
+  #
+  selector:
+    matchLabels:
+      app: trades-historical
+  #
+  template:
+    metadata:
+      labels:
+        app: trades-historical
+    spec:
+      containers:
+      - name: trades-historical
+        image: trades:dev
+        imagePullPolicy: Never # Use the local image
+        env:
+        - name: KAFKA_BROKER_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: backfill-technical-indicators
+              key: KAFKA_BROKER_ADDRESS
+        - name: KAFKA_TOPIC_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: backfill-technical-indicators
+              key: TRADES_TOPIC
+        - name: LIVE_OR_HISTORICAL
+          value: "historical"
+        - name: LAST_N_DAYS
+          valueFrom:
+            configMapKeyRef:
+              name: backfill-technical-indicators
+              key: LAST_N_DAYS
+        # - name: PRODUCT_IDS
+        #   value: |
+        #     - ETH/EUR
+        #     - BTC/USD
+        #     - BTC/EUR
+        #     - ETH/USD
+        #     - SOL/USD
+        #     - SOL/EUR
+        #     - XRP/USD
+        #     - XRP/EUR
+
+        #
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 512Mi
+          requests:
+            cpu: 100m
+            memory: 512Mi
