@@ -18,7 +18,7 @@ dependencies = [
 members = [
     "services/trades",
     "services/candles",
-    "services/technical_indicators",
+    "services/technical_indicators", "services/predictor",
 ]
 
 [tool.uv.sources]
