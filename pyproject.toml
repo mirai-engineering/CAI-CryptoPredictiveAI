@@ -7,6 +7,7 @@ requires-python = ">=3.12"
 dependencies = [
     "candles",
     "loguru>=0.7.3",
+    "predictor",
     "quixstreams>=3.13.1",
     "ta-lib>=0.6.3",
     "technical-indicators",
@@ -18,13 +19,15 @@ dependencies = [
 members = [
     "services/trades",
     "services/candles",
-    "services/technical_indicators", "services/predictor",
+    "services/technical_indicators", 
+    "services/predictor",
 ]
 
 [tool.uv.sources]
 trades = { workspace = true }
 candles = { workspace = true }
 technical-indicators = { workspace = true }
+predictor = { workspace = true }
 
 [tool.ruff]
 line-length = 88
