@@ -1,0 +1,15 @@
+#
+#  https://kubernetes.io/docs/tasks/manage-kubernetes-objects/kustomization/
+#
+#  kustomize build deployments/dev/backfill-technical-indicators | kubectl apply -f -
+#
+---
+# yaml-language-server: $schema=https://json.schemastore.org/kustomization
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rwml
+resources:
+  - ./backfill-technical-indicators-cm.yaml
+  # - ./trades-historical-j.yaml
+  # - ./candles-historical-j.yaml
+  - ./technical-indicators-historical-j.yaml

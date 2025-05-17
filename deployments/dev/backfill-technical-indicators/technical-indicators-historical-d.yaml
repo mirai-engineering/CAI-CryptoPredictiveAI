@@ -1,0 +1,45 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: technical-indicators-historical
+  namespace: rwml
+  labels:
+    app: technical-indicators-historical
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: technical-indicators-historical
+  template:
+    metadata:
+      labels:
+        app: technical-indicators-historical
+    spec:
+      containers:
+      - name: technical-indicators-historical
+        image: technical-indicators:dev
+        imagePullPolicy: Never # Use the local image
+        env:
+        - name: KAFKA_BROKER_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: backfill-technical-indicators
+              key: KAFKA_BROKER_ADDRESS
+        - name: KAFKA_INPUT_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: backfill-technical-indicators
+              key: CANDLES_TOPIC
+        - name: KAFKA_OUTPUT_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: backfill-technical-indicators
+              key: TECHNICAL_INDICATORS_TOPIC
+        - name: KAFKA_CONSUMER_GROUP
+          value: "technical_indicators_group"
+        - name: CANDLE_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              name: backfill-technical-indicators
+              key: CANDLE_SECONDS
