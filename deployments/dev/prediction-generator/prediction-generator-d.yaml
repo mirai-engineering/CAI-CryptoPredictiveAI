@@ -1,0 +1,107 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prediction-generator
+  labels:
+    app: prediction-generator
+  namespace: rwml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prediction-generator
+  template:
+    metadata:
+      labels:
+        app: prediction-generator
+    spec:
+      containers:
+      - name: prediction-generator
+        image: prediction-generator:dev
+        imagePullPolicy: Never # Use the local image
+        env:
+        #
+        - name: MLFLOW_TRACKING_URI
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: MLFLOW_TRACKING_URI
+        #
+        - name: MLFLOW_TRACKING_USERNAME
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: MLFLOW_TRACKING_USERNAME
+        #
+        - name: MLFLOW_TRACKING_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: MLFLOW_TRACKING_PASSWORD
+        #
+        - name: RISINGWAVE_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: RISINGWAVE_HOST
+        #
+        - name: RISINGWAVE_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: RISINGWAVE_PORT
+        #
+        - name: RISINGWAVE_USER
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: RISINGWAVE_USER
+        #
+        - name: RISINGWAVE_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: RISINGWAVE_PASSWORD
+        #
+        - name: RISINGWAVE_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: RISINGWAVE_DATABASE
+        #
+        - name: RISINGWAVE_INPUT_TABLE
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: RISINGWAVE_INPUT_TABLE
+        #
+        - name: RISINGWAVE_OUTPUT_TABLE
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: RISINGWAVE_OUTPUT_TABLE
+        #
+        - name: PAIR
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: PAIR
+        #
+        - name: PREDICTION_HORIZON_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: PREDICTION_HORIZON_SECONDS
+        #
+        - name: CANDLE_SECONDS
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: CANDLE_SECONDS
+        #
+        - name: MODEL_VERSION
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-generator
+              key: MODEL_VERSION
