@@ -9,6 +9,7 @@ dependencies = [
     "loguru>=0.7.3",
     "predictor",
     "quixstreams>=3.13.1",
+    "risingwave-py",
     "ta-lib>=0.6.3",
     "technical-indicators",
     "trades",
@@ -28,6 +29,7 @@ trades = { workspace = true }
 candles = { workspace = true }
 technical-indicators = { workspace = true }
 predictor = { workspace = true }
+risingwave-py = { git = "https://github.com/risingwavelabs/risingwave-py" }
 
 [tool.ruff]
 line-length = 88
