@@ -135,6 +135,7 @@ def train(
     logger.info('Starting training process')
 
     logger.info('Setting up MLflow tracking URI')
+
     mlflow.set_tracking_uri(mlflow_tracking_uri)
 
     logger.info('Setting up MLflow experiment')
