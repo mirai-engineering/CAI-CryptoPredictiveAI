@@ -11,13 +11,19 @@ dependencies = [
     "great-expectations>=0.18.8",
     "lazypredict>=0.2.16",
     "loguru>=0.7.3",
-    "mlflow[auth]>=2.22.0",
+    "mlflow>=2.22.0",
     "optuna>=4.3.0",
     "psycopg2-binary==2.9.9",
-    "scikit-learn>=1.6.1",
+    "numpy==1.26.4", # <- explicitly pin
+    "pandas==2.2.2", # <- compatible with numpy 1.26.4
+    "scikit-learn==1.6.1",
     "ydata-profiling>=4.16.1",
+    "risingwave-py",
 ]
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[tool.uv.sources]
+risingwave-py = { git = "https://github.com/risingwavelabs/risingwave-py" }

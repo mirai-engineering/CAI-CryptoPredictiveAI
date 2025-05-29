@@ -6,33 +6,34 @@ ENV UV_COMPILE_BYTECODE=1
 ENV UV_LINK_MODE=copy
 ENV UV_SYSTEM_PYTHON=1
 
-# Install build dependencies for confluent-kafka
+# Install build dependencies for confluent-kafka and data science libs
 RUN apt-get update && apt-get install -y --no-install-recommends \
     build-essential \
     librdkafka-dev \
     libssl-dev \
     pkg-config \
+    git \ 
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the application source
+# Copy predictor service source (pyproject.toml, uv.lock, source code, etc.)
 COPY services/predictor/ .
 
-# Install dependencies using uv
+# Install dependencies using uv (respects pyproject.toml + uv.lock)
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv pip install --system -e .
 
-# Create state directory with proper permissions
+# Create writable directory (if needed by code)
 RUN mkdir -p /app/state && chmod -R 777 /app/state
 
 ########################  Stage 2 – runtime  ##########################
-FROM python:3.12-slim-bookworm
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app
 
-# Install runtime dependencies for confluent-kafka
+# Install runtime dependencies (minimal required libs)
 RUN apt-get update && apt-get install -y --no-install-recommends \
     librdkafka1 \
     libssl3 \
@@ -41,16 +42,15 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 # Copy Python packages from builder
 COPY --from=builder /usr/local/lib/python3.12/site-packages/ /usr/local/lib/python3.12/site-packages/
 
-# Copy application files
+# Copy the app source itself
 COPY --from=builder /app/ /app/
 
-# Set environment variables
+# Set envs
 ENV PYTHONUNBUFFERED=1
 
-# Create and use non-root user for security
-RUN useradd -m -u 1000 appuser && \
-    chown -R appuser:appuser /app
+# Create non-root user for security
+RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Use exec form for ENTRYPOINT to avoid shell requirement
+# Set the predictor entrypoint
 ENTRYPOINT ["python", "/app/src/predictor/train.py"]

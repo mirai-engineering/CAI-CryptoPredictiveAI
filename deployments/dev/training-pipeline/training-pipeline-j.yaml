@@ -5,7 +5,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: training-pipeline-123c
+  name: training-pipeline-767y
   namespace: rwml
 spec:
   backoffLimit: 0
