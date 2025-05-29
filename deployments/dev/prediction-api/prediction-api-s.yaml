@@ -1,0 +1,20 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prediction-api
+  namespace: rwml
+spec:
+  selector:
+    # app.kubernetes.io/name: prediction-api
+    app: prediction-api
+    # app.kubernetes.io/instance: prediction-api
+  ports:
+    - protocol: TCP
+      port: 18080  # Marius' nugget of wisdom: Set the service port to the target port + 10,000
+      targetPort: 8080
+
+      # app.kubernetes.io/name=prediction-api
+      # app.kubernetes.io/instance=grafana,app.kubernetes.io/name=grafana
+
+       

@@ -1,0 +1,63 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prediction-api
+  labels:
+    app.kubernetes.io/name: prediction-api # This is the name the Service looks for
+  namespace: rwml
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prediction-api
+  template:
+    metadata:
+      labels:
+        app: prediction-api
+    spec:
+      containers:
+      - name: prediction-api
+        image: prediction-api:dev
+        imagePullPolicy: Never # Use the local image
+        env:
+        - name: API_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: API_PORT
+        - name: PG_HOST
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: PG_HOST
+        - name: PG_PORT
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: PG_PORT
+        - name: PG_DATABASE
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: PG_DATABASE
+        - name: PG_USER
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: PG_USER
+        - name: PG_PASSWORD
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: PG_PASSWORD
+        - name: PG_VIEW_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: PG_VIEW_NAME
+        - name: RUST_LOG
+          valueFrom:
+            configMapKeyRef:
+              name: prediction-api
+              key: RUST_LOG
