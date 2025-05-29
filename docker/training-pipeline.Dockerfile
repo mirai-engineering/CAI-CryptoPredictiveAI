@@ -23,7 +23,7 @@ COPY services/predictor/ .
 
 # Install dependencies using uv (respects pyproject.toml + uv.lock)
 RUN --mount=type=cache,target=/root/.cache/uv \
-    uv pip install --system -e .
+    uv pip install --system -e . 
 
 # Create writable directory (if needed by code)
 RUN mkdir -p /app/state && chmod -R 777 /app/state
@@ -37,6 +37,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     librdkafka1 \
     libssl3 \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Python packages from builder

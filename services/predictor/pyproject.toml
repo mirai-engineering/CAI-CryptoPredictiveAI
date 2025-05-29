@@ -18,6 +18,7 @@ dependencies = [
     "pandas==2.2.2", # <- compatible with numpy 1.26.4
     "scikit-learn==1.6.1",
     "ydata-profiling>=4.16.1",
+    "pydantic-settings>=2.0.0",
     "risingwave-py",
 ]
 

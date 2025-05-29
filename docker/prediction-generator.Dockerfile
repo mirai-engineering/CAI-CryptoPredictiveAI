@@ -12,6 +12,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     librdkafka-dev \
     libssl-dev \
     pkg-config \
+    git \
     && rm -rf /var/lib/apt/lists/*
 
 # Set the working directory
@@ -28,7 +29,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 RUN mkdir -p /app/state && chmod -R 777 /app/state
 
 ########################  Stage 2 – runtime  ##########################
-FROM python:3.12-slim-bookworm
+FROM ghcr.io/astral-sh/uv:python3.12-bookworm-slim
 
 WORKDIR /app
 
