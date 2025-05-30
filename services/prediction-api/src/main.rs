@@ -2,7 +2,7 @@ use axum::{
     routing::get,
     Router,
 };
-use std::env;
+// use std::env;
 use sqlx::PgPool;
 use log::info;
 

@@ -37,6 +37,7 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y --no-install-recommends \
     librdkafka1 \
     libssl3 \
+    libgomp1 \
     && rm -rf /var/lib/apt/lists/*
 
 # Copy Python packages from builder
