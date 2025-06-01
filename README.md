@@ -1,6 +1,6 @@
-### Short description
+## Short description
 
-The goal of this project is to retrieve real-time data from kraken.com and to use ML models to predict crypto prices. This is an ongoing project where I'm constantly searching for ways to optimze it and to discover new tools and apply new ideas. This project is mainly for learning purposes by having a fully-functional, real, end-to-end machine learning system.
+The goal of this project is to retrieve real-time data from kraken.com and to use ML models to predict crypto prices. This is an ongoing project, where I'm constantly searching for ways to optimze it and to discover new tools, as well as applying new ideas. This project will hopefully show you what a real-life ML project looks like, by having a fully-functional, end-to-end machine learning system.
 
 Feel free to fork it and play on your own.
 
@@ -66,7 +66,7 @@ The data will be efficiently stored into buckets in `Minio`. `Mlflow` is also in
   <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/minio.png?raw=true" width="900" alt="Kafka UI">
 </p>
 
-Finally, we can install and connect `Grafana` to our `Postgres` database to visualize the input features. As an example here is a candle chart of the ingested crypto prices:
+Finally, we can install and connect `Grafana` to our `Postgres` database to visualize the input features. As an example, here is a candle chart of some ingested crypto data:
 
 <p align="center">
   <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/grafana.png?raw=true" width="900" alt="Kafka UI">
