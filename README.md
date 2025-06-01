@@ -4,7 +4,7 @@ The goal of this project is to retrieve real-time data from kraken.com and to us
 
 Feel free to fork it and play on your own.
 
-Currently I'm working on incorporating a sentiment-analysis pipeline using a fine-tuned LLM. To ensure reproducibility and scalability the project is  implemented using Kubernetes/Docker.
+Currently I'm working on incorporating a sentiment-analysis pipeline using a fine-tuned LLM. To ensure reproducibility and scalability the project is  implemented using Kubernetes/Docker. Detailed installation guidelines are yet to come, but the project was built using `uv`, so package managing should be easy to replicate.
 
 ### Tools used
 
@@ -32,19 +32,19 @@ The cluster was created using `kind`. The picture shows an overview of some of t
 
 ## Data Ingestion Pipeline
 
-The data is retrieved from Kraken and processed with Apache Kafka for efficient data-handling and storage. By port-forwarding the UI from the Kubernetes cluseter we can see what is happeing inside the broker:
+The data is retrieved from Kraken and streamed through Apache Kafka for efficient handling and distribution. By port-forwarding the Kafka UI from the Kubernetes cluster, we can inspect what is happening inside the broker:
 <p align="center">
   <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/kafka_ui.png?raw=true" width="900" alt="Kafka UI">
 </p>
 
-In the data ingestion pipeline the data is fetched and transformed into useful technical indicators to perform stocks-analysis, such as: 
+In the data ingestion pipeline, the data is fetched and transformed into useful technical indicators to perform stocks-analysis, such as: 
 
 - Simple Moving Average (SMA)
 - Exponential Moving Average (EMA)
 - Relative Strength Index (RSI)
 - among others. 
 
-This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into useful values to train the model. 
+This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into a learnable latent space with a meaningful representation of the values to train the model. 
 
 After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. In this manner `RisingWave` pulls the data from the broker with the `WITH` connector:
 <pre><code>```CREATE TABLE technical_indicators (
@@ -58,9 +58,9 @@ After this step, we can proceed to push the data to `RisingWave`. To this end, w
     properties.bootstrap.server='PATH.local:9092'
 ) FORMAT PLAIN ENCODE JSON; ``` </code></pre>
 
-(Alternatively a pushed-based approach can be done using the `RisingWave` python SDK)
+(Alternatively a push-based approach can be done using the `RisingWave` python SDK)
 
-The data will be efficiently stored into buckets in `Minio`. `Mlflow` is also installed in this step, but we will use it later during the training process for model monitoring and evaluation. The next picture shows the `Minio` interface:
+The data is stored in MinIO buckets for efficient access and durability. `MLflow` is also installed at this stage, though it will be used later during the training phase for model tracking and evaluation.
 
 <p align="center">
   <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/minio.png?raw=true" width="900" alt="Kafka UI">
