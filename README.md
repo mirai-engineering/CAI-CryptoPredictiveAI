@@ -25,7 +25,7 @@ Currently I'm working on incorporating a sentiment-analysis pipeline using a fin
 
 Let's take a look first at the state of the development cluster using k9s:
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/k9s_services_all.png?raw=true" width="500" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/k9s_services_all.png?raw=true" width="700" alt="Kafka UI">
 </p>
 
 The cluster was created using `kind`. The picture shows an overview of some of the services being deployed in the cluster and will be referenced throughout this README.
@@ -34,7 +34,7 @@ The cluster was created using `kind`. The picture shows an overview of some of t
 
 The data is retrieved from Kraken and processed with Apache Kafka for efficient data-handling and storage. By port-forwarding the UI from the Kubernetes cluseter we can see what is happeing inside the broker:
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/kafka_ui.png?raw=true" width="500" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/kafka_ui.png?raw=true" width="700" alt="Kafka UI">
 </p>
 
 In the ingestion pipeline the data is fetched and transformed into useful technical indicators to perform stocks-analysis, such as: Simple Moving Average (SMA), Exponential Moving Average (EMA), Relative Strength Index (RSI), among others. This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into useful values to train the model. 
@@ -49,24 +49,31 @@ After this step, we can proceed to push the data to `RisingWave`. To this end, w
     connector='kafka',
     topic='technical_indicators',
     properties.bootstrap.server='PATH.local:9092'
-) FORMAT PLAIN ENCODE JSON;; ``` </code></pre>
+) FORMAT PLAIN ENCODE JSON; ``` </code></pre>
 
 Alternatively a pushed-based approach can be done using the `RisingWave` python SDK.
 
 With `Minio` the data will be efficiently stored into buckets. `Mlflow` is also installed in this step, but will be used during the training process for model monitoring and evaluation. The next picture shows the `Minio` interface:
 
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/minio.png?raw=true" width="500" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/minio.png?raw=true" width="700" alt="Kafka UI">
 </p>
 
-Finally, we can install and connect `Grafana` to our `Postgres` database to visualize the input features:
+Finally, we can install and connect `Grafana` to our `Postgres` database to visualize the input features. As an example here is a candle chart of the ingested crypto prices:
 
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/grafana.png?raw=true" width="500" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/grafana.png?raw=true" width="700" alt="Kafka UI">
 </p>
 
 Now, we are ready to enter the training pipeline.
 
 ## Training Pipeline
+While the rest of the pipelines are up and ready, I'm still working on this part of the README 🚧
+
+You can still wonder through the folders. This part of the project contains data validation, models and training scripts. The runs are registered in `Mlflow` and the predicted data is pushed to `RisingWave` using SQL one more time.
+
+I'm also working in the fine-tuned LLM that will be added to the training pipeline to improve predictive accuracy.
 
 ## Inference Pipeline
+
+The inference pipeline fetches the predictions from `RisingWave`  and uses a prediction API built on Rust 🦀 to produce real-time predictions in a efficient manner.
