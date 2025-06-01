@@ -1,19 +1,38 @@
 ### Short description
 
-This is an ongoing project where I'm constantly searching for ways to optimze it and discover new tools/apply new ideas. Feel free to fork it and play on your own. A more detailed README with results and installation guidelines will come shortly!
+The goal of this project is to retrieve real-time data from kraken.com and to use ML models to predict crypto prices. This is an ongoing project where I'm constantly searching for ways to optimze it and to discover new tools and apply new ideas. This project is mainly for learning purposes by having a fully-functional, real, end-to-end machine learning system.
 
-The goal is to retrieve real-time data from Kraken and to use ML models to predict crypto prices. The prediciton will be hopefully increased by incorporating sentiment-analysis through a fine-tuned LLM. To ensure reproducibility and scalability the project is also implemented Kubernetes/Docker.
+Feel free to fork it and play on your own.
+
+Currently I'm working on incorporating a sentiment-analysis pipeline using a fine-tuned LLM. To ensure reproducibility and scalability the project is  implemented using Kubernetes/Docker.
 
 ### Tools used
 
 - Kubernetes/Docker
 - Python
 - SQL
-- Kafka
+- Apache Kafka/Quixstreams
 - RisingWave
-- Grafana
-- Screening of ML Models with Scikit-learn
+- Minio
+- Grafana (Data and error visualization)
+- Screening of ML models with Scikit-learn
 - Optuna (HP optimization)
-- Mlflow
-- Rust
+- Mlflow (Model registry)
+- Rust (Prediciton API)
 - LLMs
+
+### How it looks like
+
+Let's take a look first at the state of the development cluster using k9s:
+<p align="center">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/k9s_services_all?raw=true" width="500" alt="Kafka UI">
+</p>
+
+The cluster was created using `kind` . Here the picture shows an overview of some of the services being deployed in the cluster and will be referenced throughout this README.
+
+## Data Ingestion Pipeline
+
+The data is retrieved from Kraken and processed with Apache Kafka for efficient data-handling and storage. By port-forwarding the UI from the Kubernetes cluseter we can see what is happeing inside the broker:
+<p align="center">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/kafka_ui.png?raw=true" width="500" alt="Kafka UI">
+</p>
