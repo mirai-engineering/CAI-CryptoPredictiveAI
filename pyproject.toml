@@ -20,7 +20,7 @@ members = [
     "services/trades",
     "services/candles",
     "services/technical_indicators", 
-    "services/predictor",
+    "services/predictor", "services/news", "news_sentiment", "services/news_sentiment",
 ]
 
 [tool.uv.sources]
