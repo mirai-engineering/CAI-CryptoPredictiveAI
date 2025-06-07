@@ -44,7 +44,7 @@ In the data ingestion pipeline, the data is fetched and transformed into useful 
 - Relative Strength Index (RSI)
 - among others. 
 
-This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into a learnable latent space with a meaningful representation of the values to train the model. 
+This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into a more meaningful representation of the values, which will be later used to train the model. 
 
 After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. In this manner `RisingWave` pulls the data from the broker with the `WITH` connector:
 <pre><code>```CREATE TABLE technical_indicators (
