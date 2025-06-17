@@ -4,6 +4,10 @@ version = "0.1.0"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
+dependencies = [
+    "candles",
+    "trades",
+]
 
 [tool.setuptools]
 packages = [
@@ -26,11 +30,11 @@ members = [
 ]
 
 [tool.uv.sources]
-trades = { workspace = true }
-candles = { workspace = true }
 technical-indicators = { workspace = true }
 predictor = { workspace = true }
 risingwave-py = { git = "https://github.com/risingwavelabs/risingwave-py" }
+trades = { workspace = true }
+candles = { workspace = true }
 
 [tool.ruff]
 line-length = 88
