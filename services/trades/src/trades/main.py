@@ -21,6 +21,7 @@ def run(
     app = Application(
         broker_address=kafka_broker_address,
     )
+    import math
 
     # Define a topic "my_topic" with JSON serialization
     topic = app.topic(
