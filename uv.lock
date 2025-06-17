@@ -494,11 +494,18 @@ dependencies = [
     { name = "trades" },
 ]
 
+[package.optional-dependencies]
+talib = [
+    { name = "ta-lib" },
+]
+
 [package.metadata]
 requires-dist = [
     { name = "candles", editable = "services/candles" },
+    { name = "ta-lib", marker = "extra == 'talib'", specifier = ">=0.6.3" },
     { name = "trades", editable = "services/trades" },
 ]
+provides-extras = ["talib"]
 
 [[package]]
 name = "cryptography"
