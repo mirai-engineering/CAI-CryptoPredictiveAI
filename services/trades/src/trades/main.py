@@ -21,7 +21,7 @@ def run(
     app = Application(
         broker_address=kafka_broker_address,
     )
-    import math
+    
 
     # Define a topic "my_topic" with JSON serialization
     topic = app.topic(
@@ -30,7 +30,7 @@ def run(
         # You can use the from quixstreams.models import TopicConfig to configure the topic, if the topic does not exist yet.
         # config=TopicConfig(replication_factor=1, num_partitions=kafka_topic_partitions)
     )
-
+    import math
     # Create a Producer instance
     with app.get_producer() as producer:
         while not kraken_api.is_done():
