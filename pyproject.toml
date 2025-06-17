@@ -9,6 +9,12 @@ dependencies = [
     "trades",
 ]
 
+[project.optional-dependencies]
+talib = [
+    "ta-lib>=0.6.3",
+]
+
+
 [tool.setuptools]
 packages = [
     "services.trades",
