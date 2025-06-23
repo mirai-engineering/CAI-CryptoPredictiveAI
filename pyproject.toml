@@ -9,11 +9,6 @@ dependencies = [
     "trades",
 ]
 
-[project.optional-dependencies]
-talib = [
-    "ta-lib>=0.6.3",
-]
-
 
 [tool.setuptools]
 packages = [
@@ -39,8 +34,8 @@ members = [
 technical-indicators = { workspace = true }
 predictor = { workspace = true }
 risingwave-py = { git = "https://github.com/risingwavelabs/risingwave-py" }
-trades = { workspace = true }
 candles = { workspace = true }
+trades = { workspace = true }
 
 [tool.ruff]
 line-length = 88

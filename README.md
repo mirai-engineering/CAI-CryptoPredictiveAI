@@ -4,8 +4,7 @@ The goal of this project is to retrieve real-time data from kraken.com and to us
 
 Feel free to fork it and play on your own.
 
-Currently I'm working on incorporating a sentiment-analysis pipeline using a fine-tuned LLM. To ensure reproducibility and scalability the project is  implemented using Kubernetes/Docker. Detailed installation guidelines are yet to come, but the project was built using `uv`, so package managing should be easy to replicate.
-
+Currently I'm working on incorporating a sentiment-analysis pipeline using a fine-tuned LLM. To ensure reproducibility and scalability the project is  implemented using Kubernetes/Docker. 
 ### Tools used
 
 - Kubernetes/Docker
@@ -20,6 +19,21 @@ Currently I'm working on incorporating a sentiment-analysis pipeline using a fin
 - Mlflow (Model registry)
 - Rust (Prediciton API)
 - LLMs
+
+### Quick Set-Up 
+I've decided to work in all my projects with `uv` from now on, as its versatility, ease of use and cleaninless are the best I've seen so far. Just take a look at https://docs.astral.sh/uv/.
+
+Before moving forward, take a look at the `pyproject.toml` file in the root of this repo. It is linked to the python packages of all services, which allows a clean and modular management of python libraries, crucial for proper service containarization with Docker.
+
+That being said, all you need to do is clone this repo and run the following command:
+```bash
+uv sync
+```
+This will automatically create a `.venv` and install the main dependencies. Additionally, you will need to run once for each service the following command:
+```bash
+uv add service/service_name
+```
+to ensure all the dependencies are installed within their own `pyproject.toml` files. 
 
 ### How it looks like
 
