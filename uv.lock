@@ -252,12 +252,14 @@ version = "0.1.0"
 source = { editable = "services/candles" }
 dependencies = [
     { name = "loguru" },
+    { name = "numpy" },
     { name = "quixstreams" },
 ]
 
 [package.metadata]
 requires-dist = [
     { name = "loguru", specifier = ">=0.7.3" },
+    { name = "numpy", specifier = ">=1.26.4" },
     { name = "quixstreams", specifier = ">=3.13.1" },
 ]
 
