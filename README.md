@@ -68,7 +68,7 @@ psql -h localhost -p 4567 -d dev -U root
 ```
 
 After port-forwarding the risingwave-service, we can tell `RisingWave` to pull the data from the broker with the `WITH` connector:
-<pre><code>```CREATE TABLE technical_indicators (
+<pre><code> CREATE TABLE technical_indicators (
     pair VARCHAR,
     open FLOAT,
     ...
@@ -77,7 +77,7 @@ After port-forwarding the risingwave-service, we can tell `RisingWave` to pull t
     connector='kafka',
     topic='technical_indicators',
     properties.bootstrap.server='PATH.local:9092'
-) FORMAT PLAIN ENCODE JSON; ``` </code></pre>
+) FORMAT PLAIN ENCODE JSON; </code></pre>
 
 Then use `\d` on the interactive session to check everything was created succesfully. (Alternatively a push-based approach can be done using the `RisingWave` python SDK)
 
