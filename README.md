@@ -60,7 +60,7 @@ In the data ingestion pipeline, the data is fetched and transformed into useful 
 
 This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into a more meaningful representation of the values, which will be later used to train the model. 
 
-After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. To this end, we need to start a PostgreSQL interactive session on the terminal, by running the following commands:
+After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. This means that we need to start a PostgreSQL interactive session on the terminal, by running the following commands:
 
 ```bash
 kubectl port-forward svc/risingwave-frontend-7849d74db9-dlc28 4567:4567 -n risingwave
