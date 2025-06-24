@@ -29,7 +29,7 @@ That being said, all you need to do is clone this repo and run the following com
 ```bash
 uv sync
 ```
-This will automatically create a `.venv` and install the main dependencies. Additionally, you will need to run once for each service the following command:
+This will automatically create a `.venv` and install the main dependencies. Additionally, you will need to run the following command once for each service:
 ```bash
 uv add service/service_name
 ```
