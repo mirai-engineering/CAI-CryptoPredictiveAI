@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: technical-indicators
-        image: technical_indicators:dev
+        image: technical-indicators:dev
         imagePullPolicy: Never # Use the local image
         env:
         - name: KAFKA_BROKER_ADDRESS
