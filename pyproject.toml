@@ -6,6 +6,9 @@ readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
     "candles",
+    "news",
+    "news-sentiment",
+    "predictor",
     "technical-indicators",
     "trades",
 ]
@@ -32,11 +35,13 @@ members = [
 ]
 
 [tool.uv.sources]
-predictor = { workspace = true }
 risingwave-py = { git = "https://github.com/risingwavelabs/risingwave-py" }
 candles = { workspace = true }
 trades = { workspace = true }
 technical-indicators = { workspace = true }
+predictor = { workspace = true }
+news = { workspace = true }
+news-sentiment = { workspace = true }
 
 [tool.ruff]
 line-length = 88

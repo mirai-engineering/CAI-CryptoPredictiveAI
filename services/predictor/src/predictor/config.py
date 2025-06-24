@@ -10,7 +10,7 @@ class TrainingConfig(BaseSettings):
     risingwave_user: str = 'root'
     risingwave_password: str = ''
     risingwave_database: str = 'dev'
-    risingwave_table: str = 'public.technical_indicators'
+    risingwave_table: str = 'public.technical_indicators'  # defined in the RisingWave database through SQL query in technical-indicators service
     pair: str = 'BTC/USD'
     training_data_horizon_days: int = 10
     candle_seconds: int = 60
