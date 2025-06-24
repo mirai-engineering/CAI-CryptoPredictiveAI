@@ -21,7 +21,7 @@ Currently I'm working on incorporating a sentiment-analysis pipeline using a fin
 - LLMs
 
 ### Quick Set-Up 
-I've decided to work in all my projects with `uv` from now on, as its versatility, ease of use and cleaninless are the best I've seen so far. Just take a look at https://docs.astral.sh/uv/.
+From now on I've decided to work in all my projects using `uv` for package management, as its versatility, ease of use and cleaninless are the best I've seen so far. Just take a look at https://docs.astral.sh/uv/.
 
 Before moving forward, take a look at the `pyproject.toml` file in the root of this repo. It is linked to the python packages of all services, which allows a clean and modular management of python libraries, crucial for proper service containarization with Docker.
 
@@ -60,7 +60,14 @@ In the data ingestion pipeline, the data is fetched and transformed into useful 
 
 This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into a more meaningful representation of the values, which will be later used to train the model. 
 
-After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. In this manner `RisingWave` pulls the data from the broker with the `WITH` connector:
+After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. To this end, we need to start a PostgreSQL interactive session on the terminal, by running the following commands:
+
+```bash
+kubectl port-forward svc/risingwave-frontend-7849d74db9-dlc28 4567:4567 -n risingwave
+psql -h localhost -p 4567 -d dev -U root
+```
+
+After port-forwarding the risingwave-service, we can tell `RisingWave` to pull the data from the broker with the `WITH` connector:
 <pre><code>```CREATE TABLE technical_indicators (
     pair VARCHAR,
     open FLOAT,
@@ -72,7 +79,7 @@ After this step, we can proceed to push the data to `RisingWave`. To this end, w
     properties.bootstrap.server='PATH.local:9092'
 ) FORMAT PLAIN ENCODE JSON; ``` </code></pre>
 
-(Alternatively a push-based approach can be done using the `RisingWave` python SDK)
+Then use `\d` on the interactive session to check everything was created succesfully. (Alternatively a push-based approach can be done using the `RisingWave` python SDK)
 
 The data is stored in MinIO buckets for efficient access and durability. `MLflow` is also installed at this stage, though it will be used later during the training phase for model tracking and evaluation.
 
