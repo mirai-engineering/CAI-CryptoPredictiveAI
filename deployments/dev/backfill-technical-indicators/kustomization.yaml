@@ -10,6 +10,9 @@ kind: Kustomization
 namespace: rwml
 resources:
   - ./backfill-technical-indicators-cm.yaml
-  # - ./trades-historical-j.yaml
-  # - ./candles-historical-j.yaml
-  - ./technical-indicators-historical-j.yaml
+  - ./backfill-technical-indicators-j.yaml
+  # I was using these before the kustomization.yaml. Don't mix them up as it 
+  #creates duplicates and that throws an error
+  #- ./trades-historical-j.yaml
+  #- ./candles-historical-j.yaml
+  #- ./technical-indicators-historical-j.yaml

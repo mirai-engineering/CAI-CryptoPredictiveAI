@@ -8,8 +8,8 @@ data:
   # Quote them!!! - by Marius
   # https://12factor.net/config
   KAFKA_BROKER_ADDRESS: "kafka-e11b-kafka-bootstrap.kafka.svc.cluster.local:9092"
-  TRADES_TOPIC: "trades_historical_3f5"
-  CANDLES_TOPIC: "candles_historical_3f5"
+  TRADES_TOPIC: "trades_historical_3f15"
+  CANDLES_TOPIC: "candles_historical_3f15"
   TECHNICAL_INDICATORS_TOPIC: "technical_indicators"
-  LAST_N_DAYS: "60"
+  LAST_N_DAYS: "10"
   CANDLE_SECONDS: "60"

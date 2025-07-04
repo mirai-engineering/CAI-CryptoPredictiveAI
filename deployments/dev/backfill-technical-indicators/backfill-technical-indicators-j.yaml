@@ -1,19 +1,4 @@
 ---
-apiVersion: v1
-kind: ConfigMap
-metadata:
-  name: backfill-technical-indicators
-  namespace: rwml
-data:
-  # Quote them!!! - by Marius
-  # https://12factor.net/config
-  KAFKA_BROKER_ADDRESS: "kafka-e11b-kafka-bootstrap.kafka.svc.cluster.local:9092"
-  TRADES_TOPIC: "trades_historical_7z8"
-  CANDLES_TOPIC: "candles_historical_7z8"
-  TECHNICAL_INDICATORS_TOPIC: "technical_indicators"
-  LAST_N_DAYS: "60"
-  CANDLE_SECONDS: "60"
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
