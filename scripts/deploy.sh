@@ -29,6 +29,7 @@ if [ -f ${service}/kustomization.yaml ]; then
     # delete the service
     # TODO: add the ignore-not-found flag to avoid errors the first time you deploy something
     kustomize build ${service} | kubectl delete -f -
+    echo "Deleted previous ${service} to avoid conflicts, now deploying new version"
     # deploy the service
     kustomize build ${service} | kubectl apply -f -
 else
