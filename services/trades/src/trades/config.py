@@ -9,22 +9,20 @@ class Settings(BaseSettings):
         env_file='services/trades/settings.env', env_file_encoding='utf-8'
     )
 
-    product_ids: list[str] = [
-        'ETH/EUR',
-        'BTC/USD',
-        'BTC/EUR',
-        'ETH/USD',
-        'SOL/USD',
-        'SOL/EUR',
-        'XRP/USD',
-        'XRP/EUR',
-    ]
+    product_ids: list[str] = ['ETH/EUR', 'BTC/USD']
+    #'BTC/EUR',
+    #'ETH/USD',
+    #'SOL/USD',
+    #'SOL/EUR',
+    #'XRP/USD',
+    #'XRP/EUR',
+
     kafka_broker_address: str
     kafka_topic_name: str
     live_or_historical: Literal['live', 'historical'] = Field(
         'live', env='LIVE_OR_HISTORICAL'
     )
-    last_n_days: int = 30
+    last_n_days: int = 10
 
 
 config = Settings()
