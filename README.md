@@ -29,7 +29,7 @@ That being said, all you need to do is clone this repo and run the following com
 ```bash
 uv sync
 ```
-This will automatically create a `.venv` and install the main dependencies. Additionally, you will need to run once for each service the following command:
+This will automatically create a `.venv` and install the main dependencies. Additionally, you will need to run the following command once for each service:
 ```bash
 uv add service/service_name
 ```
@@ -60,7 +60,7 @@ In the data ingestion pipeline, the data is fetched and transformed into useful 
 
 This is the first step of the feature engineering process, where the input signal (crypto prices) is transformed into a more meaningful representation of the values, which will be later used to train the model. 
 
-After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. To this end, we need to start a PostgreSQL interactive session on the terminal, by running the following commands:
+After this step, we can proceed to push the data to `RisingWave`. To this end, we install `RisingWave`, `Minio` and `Postgres` inside the same kubernetes service. This allows us to push and store the data by using a SQL query. This means that we need to start a PostgreSQL interactive session on the terminal, by running the following commands:
 
 ```bash
 kubectl port-forward svc/risingwave-frontend-7849d74db9-dlc28 4567:4567 -n risingwave
@@ -68,7 +68,7 @@ psql -h localhost -p 4567 -d dev -U root
 ```
 
 After port-forwarding the risingwave-service, we can tell `RisingWave` to pull the data from the broker with the `WITH` connector:
-<pre><code>```CREATE TABLE technical_indicators (
+<pre><code> CREATE TABLE technical_indicators (
     pair VARCHAR,
     open FLOAT,
     ...
@@ -77,7 +77,7 @@ After port-forwarding the risingwave-service, we can tell `RisingWave` to pull t
     connector='kafka',
     topic='technical_indicators',
     properties.bootstrap.server='PATH.local:9092'
-) FORMAT PLAIN ENCODE JSON; ``` </code></pre>
+) FORMAT PLAIN ENCODE JSON; </code></pre>
 
 Then use `\d` on the interactive session to check everything was created succesfully. (Alternatively a push-based approach can be done using the `RisingWave` python SDK)
 
