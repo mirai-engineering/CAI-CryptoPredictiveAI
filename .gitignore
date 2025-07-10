@@ -225,5 +225,8 @@ services/predictor/test_mlflow copy.py
 services/predictor/test_mlflow.py
 services/predictor/src/predictor/eda_report.html
 
-#
+# secret keys
 *-secret.yaml
+
+# html from EDA
+*.html
