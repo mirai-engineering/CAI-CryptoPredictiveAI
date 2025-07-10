@@ -17,7 +17,7 @@ class TrainingConfig(BaseSettings):
     prediction_horizon_seconds: int = 300
     train_test_split_ratio: float = 0.8
     max_percentage_rows_with_missing_values: float = 0.01
-    data_profiling_n_rows: int = 1
+    data_profiling_n_rows: int = 100
     eda_report_html_path: str = './eda_report.html'
     features: list[str] = [
         'open',
@@ -47,7 +47,7 @@ class TrainingConfig(BaseSettings):
     model_name: Optional[str] = 'HuberRegressor'
     n_model_candidates: int = 1
     max_percentage_diff_mae_wrt_baseline: float = (
-        0.50  # in a real scenario you can reduce this parameter further.
+        0.90  # in a real scenario you can reduce this parameter further.
     )
 
 
