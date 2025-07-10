@@ -184,7 +184,7 @@ def train(
         # Step 2. Add target column
         ts_data['target'] = ts_data['close'].shift(
             -prediction_horizon_seconds // candle_seconds
-        )
+        )  # the model sees features at time t and learns to predict the close price h steps ahead.
 
         # log the data to MLflow
         dataset = mlflow.data.from_pandas(ts_data)
@@ -198,12 +198,11 @@ def train(
 
         # Homework:
         # Plot data drift of the current data vs the data used by the model in the model registry.
-        from predictor.data_validation import generate_data_drift_report
+        # from predictor.data_validation import generate_data_drift_report
 
-        generate_data_drift_report(ts_data, model_name)
+        # generate_data_drift_report(ts_data, model_name) does nothing so far
 
         # Step 4. Profile the data
-        # after the break
         ts_data_to_profile = (
             ts_data.head(data_profiling_n_rows) if data_profiling_n_rows else ts_data
         )
@@ -242,12 +241,16 @@ def train(
             # We fit N models with default hyperparameters for the given
             # (X_train, y_train), and evaluate them with (X_test, y_test)
             # to find the best `n_model_candidates` models
+
+            # In the future I still need to do all the feature engineering part properly:
+            # scaling, transformations, dimensionality etc (without leaking from val/test!)
+
             model_names = get_model_candidates(
                 X_train, y_train, X_test, y_test, n_candidates=n_model_candidates
             )
 
             # TODO: this is a hack that works when we have only one candidate model
-            # How would you modify this code to use a list of candiate models, and adjust
+            # How to modify this code to use a list of candiate models, and adjust
             # their hyperparameters in the next step?
             model_name = model_names[0]
 
