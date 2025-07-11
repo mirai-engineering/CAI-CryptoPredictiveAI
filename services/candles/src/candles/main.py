@@ -1,5 +1,21 @@
+from typing import Any, List, Optional, Tuple
+
 from loguru import logger
 from quixstreams import Application
+from quixstreams.models import TimestampType
+
+
+def custom_ts_extractor(
+    value: Any,
+    headers: Optional[List[Tuple[str, bytes]]],
+    timestamp: float,
+    timestamp_type: TimestampType,
+) -> int:
+    """
+    Specifying a custom timestamp extractor to use the timestamp from the message
+    payload instead of Kafka timestamp.
+    """
+    return value['timestamp_ms']
 
 
 def init_candle(trade: dict) -> dict:
@@ -78,10 +94,16 @@ def run(
     )
 
     # input topic
-    trades_topic = app.topic(kafka_input_topic, value_deserializer='json')
+    trades_topic = app.topic(
+        kafka_input_topic,
+        value_deserializer='json',
+        timestamp_extractor=custom_ts_extractor,
+    )
     # output topic
-    candles_topic = app.topic(kafka_output_topic, value_serializer='json')
-
+    candles_topic = app.topic(
+        kafka_output_topic,
+        value_serializer='json',
+    )
     # Step 1. Ingest trades from the input kafka topic
     # Create a Streaming DataFrame connected to the input Kafka topic
     sdf = app.dataframe(topic=trades_topic)
