@@ -3,13 +3,13 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: backfill-technical-indicators
-  namespace: rwml
+  namespace: ingestion-pipeline
 data:
   # Quote them!!! - by Marius
   # https://12factor.net/config
   KAFKA_BROKER_ADDRESS: "kafka-e11b-kafka-bootstrap.kafka.svc.cluster.local:9092"
-  TRADES_TOPIC: "trades_historical_3f15"
-  CANDLES_TOPIC: "candles_historical_3f15"
+  TRADES_TOPIC: "trades_historical_73jke"
+  CANDLES_TOPIC: "candles_historical_73jke"
   TECHNICAL_INDICATORS_TOPIC: "technical_indicators"
-  LAST_N_DAYS: "10"
+  LAST_N_DAYS: "15"
   CANDLE_SECONDS: "60"

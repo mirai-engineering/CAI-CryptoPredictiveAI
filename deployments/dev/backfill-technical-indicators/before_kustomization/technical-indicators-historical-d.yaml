@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: technical-indicators-historical
-  namespace: rwml
+  namespace: ingestion-pipeline
   labels:
     app: technical-indicators-historical
 spec:

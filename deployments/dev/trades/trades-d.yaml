@@ -2,6 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: trades
+  namespace: ingestion-pipeline
   labels:
     app: trades
 spec:
@@ -23,3 +24,5 @@ spec:
           value: kafka-e11b-kafka-bootstrap.kafka.svc.cluster.local:9092
         - name: KAFKA_TOPIC_NAME
           value: "trades"
+        - name: LIVE_OR_HISTORICAL
+          value: "live"
