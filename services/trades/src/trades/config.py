@@ -9,8 +9,8 @@ class Settings(BaseSettings):
         env_file='services/trades/settings.env', env_file_encoding='utf-8'
     )
 
-    product_ids: list[str] = ['ETH/USD', 'BTC/USD']
-    #'BTC/EUR',
+    product_ids: list[str] = ['ETH/USD']
+    #'BTC/USD',
     #'ETH/USD',
     #'SOL/USD',
     #'SOL/EUR',
