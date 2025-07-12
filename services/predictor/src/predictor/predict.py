@@ -121,6 +121,7 @@ def predict(
         # Write dataframe to the `risingwave_output_table`
         rw.insert(table_name=risingwave_output_table, data=output)
 
+    logger.info('before using on_change')
     rw.on_change(
         subscribe_from=risingwave_input_table,
         schema_name=risingwave_schema,

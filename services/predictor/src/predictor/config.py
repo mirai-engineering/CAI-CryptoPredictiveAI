@@ -11,12 +11,12 @@ class TrainingConfig(BaseSettings):
     risingwave_password: str = ''
     risingwave_database: str = 'dev'
     risingwave_table: str = 'public.technical_indicators'  # defined in the RisingWave database through SQL query in technical-indicators service
-    pair: str = 'BTC/USD'
+    pair: str = 'ETH/USD'
     training_data_horizon_days: int = 10
     candle_seconds: int = 60
     prediction_horizon_seconds: int = 300
     train_test_split_ratio: float = 0.8
-    max_percentage_rows_with_missing_values: float = 0.01
+    max_percentage_rows_with_missing_values: float = 0.1
     data_profiling_n_rows: int = 100
     eda_report_html_path: str = './eda_report.html'
     features: list[str] = [
@@ -65,7 +65,7 @@ class PredictorConfig(BaseSettings):
     risingwave_input_table: str = 'technical_indicators'
     risingwave_output_table: str = 'predictions'
 
-    pair: str = 'BTC/USD'
+    pair: str = 'ETH/USD'
     prediction_horizon_seconds: int = 300
     candle_seconds: int = 60
     model_version: Optional[str] = 'latest'
