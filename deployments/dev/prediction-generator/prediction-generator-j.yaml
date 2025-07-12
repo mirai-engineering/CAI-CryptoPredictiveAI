@@ -5,7 +5,7 @@ metadata:
   name: prediction-generator
   labels:
     app: prediction-generator
-  namespace: rwml
+  namespace: inference-pipeline
 spec:
   replicas: 1
   selector:

@@ -3,7 +3,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: prediction-generator
-  namespace: rwml
+  namespace: inference-pipeline
 data:
   # Quote them!!! - by Marius
   # https://12factor.net/config
@@ -17,7 +17,7 @@ data:
   RISINGWAVE_DATABASE: "dev"
   RISINGWAVE_INPUT_TABLE: "technical_indicators"
   RISINGWAVE_OUTPUT_TABLE: "predictions"
-  PAIR: "BTC/USD"
+  PAIR: "ETH/USD"
   PREDICTION_HORIZON_SECONDS: "300"
   CANDLE_SECONDS: "60"
   MODEL_VERSION: "latest"
