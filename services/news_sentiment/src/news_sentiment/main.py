@@ -8,7 +8,7 @@ def get_sentiment_scores(news_item: dict) -> list[dict]:
     # TODO: Call the actual LLM API to get the sentiment scores
     # For the moment I will mock the sentiment scores
     return [
-        {'coin': 'BTC', 'score': 1, 'timestamp_ms': timestamp_ms},
+        # {'coin': 'BTC', 'score': 1, 'timestamp_ms': timestamp_ms},
         {'coin': 'ETH', 'score': -1, 'timestamp_ms': timestamp_ms},
     ]
 
@@ -35,7 +35,7 @@ def run(
     app = Application(
         broker_address=kafka_broker_address,
         consumer_group=kafka_consumer_group,
-        auto_offset_reset='earliest',
+        auto_offset_reset='earliest',  # this will be problematic in the future when receiving new data
     )
 
     # input topic
