@@ -20,6 +20,7 @@ def get_model_name(
 def load_model(
     model_name: str,
     model_version: Optional[str] = 'latest',
+    mlflow_tracking_uri: Optional[str] = None,
 ) -> Tuple[Any, list[str]]:
     """
     Loads the given `model_name` with version `model_version` from the MLflow model registry,
@@ -33,6 +34,9 @@ def load_model(
         The model object and the model's feature list.
 
     """
+    if mlflow_tracking_uri:
+        mlflow.set_tracking_uri(mlflow_tracking_uri)
+
     model = mlflow.sklearn.load_model(model_uri=f'models:/{model_name}/{model_version}')
 
     # Get the model info which contains the signature

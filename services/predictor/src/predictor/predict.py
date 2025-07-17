@@ -50,7 +50,7 @@ def predict(
     # Step 1. Load the model from the MLflow model registry
     model_name = get_model_name(pair, candle_seconds, prediction_horizon_seconds)
     logger.info(f'Loading model {model_name} with version {model_version}')
-    model, features = load_model(model_name, model_version)
+    model, features = load_model(model_name, model_version, mlflow_tracking_uri)
 
     # Step 2. Start listening to data changes in the `risingwave_input_table`
     rw = RisingWave(
