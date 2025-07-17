@@ -40,8 +40,8 @@ candles = { workspace = true }
 trades = { workspace = true }
 technical-indicators = { workspace = true }
 predictor = { workspace = true }
-news = { workspace = true }
 news-sentiment = { workspace = true }
+news = { workspace = true }
 
 [tool.ruff]
 line-length = 88

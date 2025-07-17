@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: prediction-generator
+  name: prediction-generator-rt54
   namespace: inference-pipeline
 data:
   # Quote them!!! - by Marius
@@ -16,7 +16,7 @@ data:
   RISINGWAVE_PASSWORD: ""
   RISINGWAVE_DATABASE: "dev"
   RISINGWAVE_INPUT_TABLE: "technical_indicators"
-  RISINGWAVE_OUTPUT_TABLE: "predictions"
+  RISINGWAVE_OUTPUT_TABLE: "price_predictions"
   PAIR: "ETH/USD"
   PREDICTION_HORIZON_SECONDS: "300"
   CANDLE_SECONDS: "60"
