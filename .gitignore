@@ -224,6 +224,7 @@ anthropic.env
 services/predictor/test_mlflow copy.py
 services/predictor/test_mlflow.py
 services/predictor/src/predictor/eda_report.html
+services/news_sentiment/src/news_sentiment/baml_client/
 
 # secret keys
 *-secret.yaml
