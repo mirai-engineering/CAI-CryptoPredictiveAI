@@ -1,13 +1,5 @@
 // Learn more about clients at https://docs.boundaryml.com/docs/snippets/clients/overview
 
-client<llm> CustomGPT4o {
-  provider openai
-  options {
-    model "gpt-4o"
-    api_key env.OPENAI_API_KEY
-  }
-}
-
 client<llm> CustomGPT4oMini {
   provider openai
   retry_policy Exponential
@@ -17,10 +9,10 @@ client<llm> CustomGPT4oMini {
   }
 }
 
-client<llm> CustomSonnet {
+client<llm> ClaudeOpus4 {
   provider anthropic
   options {
-    model "claude-3-5-sonnet-20241022"
+    model "claude-opus-4-20250514"
     api_key env.ANTHROPIC_API_KEY
   }
 }
