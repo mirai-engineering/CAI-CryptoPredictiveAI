@@ -1,16 +1,7 @@
 from loguru import logger
 from quixstreams import Application
 
-
-def get_sentiment_scores(news_item: dict) -> list[dict]:
-    timestamp_ms = news_item['timestamp_ms']
-
-    # TODO: Call the actual LLM API to get the sentiment scores
-    # For the moment I will mock the sentiment scores
-    return [
-        # {'coin': 'BTC', 'score': 1, 'timestamp_ms': timestamp_ms},
-        {'coin': 'ETH', 'score': -1, 'timestamp_ms': timestamp_ms},
-    ]
+from news_sentiment.sentiment_extractor import SentimentExtractor
 
 
 def run(
@@ -19,6 +10,7 @@ def run(
     kafka_input_topic: str,
     kafka_output_topic: str,
     kafka_consumer_group: str,
+    sentiment_extractor: SentimentExtractor,
 ):
     """
     Ingests news articles from Kafka and output structured output with sentiment scores.
@@ -35,7 +27,7 @@ def run(
     app = Application(
         broker_address=kafka_broker_address,
         consumer_group=kafka_consumer_group,
-        auto_offset_reset='earliest',  # this will be problematic in the future when receiving new data
+        auto_offset_reset='earliest',
     )
 
     # input topic
@@ -47,7 +39,32 @@ def run(
     # Create a Streaming DataFrame connected to the input Kafka topic
     sdf = app.dataframe(topic=news_topic)
 
-    # Step 2. Add candles to the state dictionary
+    # Step 2. Map the news to sentiment scores
+    def get_sentiment_scores(news_item: dict) -> list[dict]:
+        """
+        Maps the given `news_item` to a list of sentiment scores.
+        """
+        timestamp_ms = news_item['timestamp_ms']
+
+        # TODO: feel free to use both the `title` and the `description` fields of the
+        # news_item dictionary
+        news: str = news_item['title']  # + ' ' + news_item.get('description', '')
+
+        # use the LLM based sentiment extractor to map the news string to SentimentScores
+        output = sentiment_extractor.extract_sentiment_scores(news)
+
+        # transform this output from SentimentScores to a list of dicts
+        sentiment_scores = [
+            {
+                'coin': score.coin,
+                'score': score.score,
+                'timestamp_ms': timestamp_ms,
+            }
+            for score in output.scores
+        ]
+
+        return sentiment_scores
+
     sdf = sdf.apply(get_sentiment_scores, expand=True)
 
     # logging on the console
@@ -63,9 +80,15 @@ def run(
 if __name__ == '__main__':
     from news_sentiment.config import config
 
+    sentiment_extractor = SentimentExtractor(
+        model=config.model,
+        base_url=config.base_url,
+    )
+
     run(
         kafka_broker_address=config.kafka_broker_address,
         kafka_input_topic=config.kafka_input_topic,
         kafka_output_topic=config.kafka_output_topic,
         kafka_consumer_group=config.kafka_consumer_group,
+        sentiment_extractor=sentiment_extractor,
     )
