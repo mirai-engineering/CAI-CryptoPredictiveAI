@@ -1,0 +1,1 @@
+### Here comes a .csv file generated from news_sentiment for training. This needs to be manually triggered in case I run out of API calls to the crypto news source.
