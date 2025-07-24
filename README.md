@@ -39,7 +39,7 @@ to ensure all the dependencies are installed within their own `pyproject.toml` f
 
 First, let's take a look at the current state of the development cluster using k9s:
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/k9s_services_all.png?raw=true" width="900" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/main/images/k9s_services_all.png?raw=true" width="900" alt="k9s">
 </p>
 
 The cluster was created using `kind`. The picture shows an overview of some of the services being deployed in the cluster, and will be referenced throughout this README.
@@ -48,7 +48,7 @@ The cluster was created using `kind`. The picture shows an overview of some of t
 
 The data is retrieved from Kraken and streamed through Apache Kafka for efficient handling and distribution. By port-forwarding the Kafka UI from the Kubernetes cluster, we can inspect what is happening inside the broker:
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/kafka_ui.png?raw=true" width="900" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/main/images/kafka_ui.png" width="900" alt="Kafka UI">
 </p>
 
 In the data ingestion pipeline, the data is fetched and transformed into useful technical indicators to perform stocks-analysis, such as: 
@@ -84,13 +84,13 @@ Then use `\d` on the interactive session to check everything was created succesf
 The data is stored in MinIO buckets for efficient access and durability. `MLflow` is also installed at this stage, though it will be used later during the training phase for model tracking and evaluation.
 
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/minio.png?raw=true" width="900" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/main/images/minio.png" width="900" alt="minio">
 </p>
 
 Finally, we can install and connect `Grafana` to our `Postgres` database to visualize the input features. As an example, here is a candle chart of some ingested crypto data:
 
 <p align="center">
-  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/bruno/images/grafana.png?raw=true" width="900" alt="Kafka UI">
+  <img src="https://github.com/brunoclbr/CryptoPredictiveAI/blob/main/images/grafana.png" width="900" alt="grafana">
 </p>
 
 Now, we are ready to enter the training pipeline.
