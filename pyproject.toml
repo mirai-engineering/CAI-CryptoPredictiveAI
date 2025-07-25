@@ -1,8 +1,7 @@
 [project]
 name = "crypto-predictor-system"
 version = "0.1.0"
-description = "root folder to keep track of main dependencies and ensure consistent versioning among python packages across services.
-Also sets up ruff/lint strategies"
+description = "root folder to keep track of main dependencies and ensure consistent versioning among python packages across services. Also sets up ruff/lint strategies"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
