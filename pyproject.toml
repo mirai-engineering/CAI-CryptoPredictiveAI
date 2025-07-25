@@ -1,7 +1,8 @@
 [project]
 name = "crypto-predictor-system"
 version = "0.1.0"
-description = "Add your description here"
+description = "root folder to keep track of main dependencies and ensure consistent versioning among python packages across services.
+Also sets up ruff/lint strategies"
 readme = "README.md"
 requires-python = ">=3.12"
 dependencies = [
@@ -40,8 +41,8 @@ candles = { workspace = true }
 trades = { workspace = true }
 technical-indicators = { workspace = true }
 predictor = { workspace = true }
-news-sentiment = { workspace = true }
 news = { workspace = true }
+news-sentiment = { workspace = true }
 
 [tool.ruff]
 line-length = 88
