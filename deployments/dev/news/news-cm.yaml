@@ -1,0 +1,12 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: news-extractor
+  namespace: llm-pipeline
+data:
+  # Quote them!!! - by Marius
+  # https://12factor.net/config
+  CRYPTOPANIC_API_KEY: "f62e465870a669edea94e72c097416c166ae49f7"  # NEVER PUSH PUBLICLY AN API KEY, CHANGE FOR A SECRET, FOR NOW THIS IS A FREE API KEY SO IT'S OK
+  KAFKA_BROKER_ADDRESS: "kafka-e11b-kafka-bootstrap.kafka.svc.cluster.local:9092"
+  KAFKA_OUTPUT_TOPIC: "news"

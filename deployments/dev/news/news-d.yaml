@@ -1,0 +1,38 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: news-extractor
+  labels:
+    app.kubernetes.io/name: news-extractor # This is the name the Service looks for
+  namespace: llm-pipeline
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: news-extractor
+  template:
+    metadata:
+      labels:
+        app: news-extractor
+    spec:
+      containers:
+      - name: news-extractor
+        image: news:dev
+        imagePullPolicy: Never # Use the local image
+        env:
+        - name: CRYPTOPANIC_API_KEY
+          valueFrom:
+            configMapKeyRef:
+              name: news-extractor
+              key: CRYPTOPANIC_API_KEY
+        - name: KAFKA_BROKER_ADDRESS
+          valueFrom:
+            configMapKeyRef:
+              name: news-extractor
+              key: KAFKA_BROKER_ADDRESS
+        - name: KAFKA_OUTPUT_TOPIC
+          valueFrom:
+            configMapKeyRef:
+              name: news-extractor
+              key: KAFKA_OUTPUT_TOPIC
