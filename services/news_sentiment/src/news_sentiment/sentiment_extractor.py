@@ -10,6 +10,7 @@ from news_sentiment.baml_client.types import SentimentScores
 
 
 class SentimentExtractor:
+    # this is the url where ollama is accesible 'http://localhost:11434/', and /v1 is for chat completions
     def __init__(
         self, model: str, base_url: Optional[str] = 'http://localhost:11434/v1'
     ):
@@ -39,7 +40,7 @@ class SentimentExtractor:
                 },
             )
 
-        elif model_provider == 'openai-generic':
+        elif model_provider == 'openai-generic':  # this is for custom LLM
             cr.add_llm_client(
                 name='MyDynamicClient',
                 provider='openai-generic',

@@ -46,8 +46,9 @@ def run(
         """
         timestamp_ms = news_item['timestamp_ms']
 
-        # TODO: feel free to use both the `title` and the `description` fields of the
-        # news_item dictionary
+        # TODO: Try both the `title` and the `description` fields of the
+        # news_item dictionary. Trade-off between more tokens more cost,
+        # maybe just the title of the news is good enough already
         news: str = news_item['title']  # + ' ' + news_item.get('description', '')
 
         # use the LLM based sentiment extractor to map the news string to SentimentScores
@@ -79,6 +80,8 @@ def run(
 
 if __name__ == '__main__':
     from news_sentiment.config import config
+
+    # these are set with env variables and the rest through the config file
 
     sentiment_extractor = SentimentExtractor(
         model=config.model,
