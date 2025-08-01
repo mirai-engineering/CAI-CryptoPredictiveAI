@@ -26,7 +26,7 @@ fi
 if [ "$env" = "dev" ]; then
     echo "Building image ${image_name} for dev"
 	docker build -t ${image_name}:dev -f docker/${image_name}.Dockerfile .
-    kind load docker-image ${image_name}:dev --name rwml-34fa
+    kind load docker-image ${image_name}:dev --name dev-cluster-cai
 else
     echo "Building image ${image_name} for prod"
     BUILD_DATE=$(date +%s)
