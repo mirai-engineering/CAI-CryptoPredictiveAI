@@ -9,7 +9,10 @@ class Settings(BaseSettings):
         env_file='services/trades/settings.env', env_file_encoding='utf-8'
     )
 
-    product_ids: list[str] = ['ETH/USD']
+    product_ids: list[str] = [
+        'ETH/USD'
+    ]  # TODO: need to expand the code so that it can loop through the list, so far
+    # in rest_api part I'm simply unpacking the list with [0]
     #'BTC/USD',
     #'ETH/USD',
     #'SOL/USD',

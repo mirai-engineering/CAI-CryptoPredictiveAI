@@ -22,6 +22,7 @@ def validate_data(
     perc_row_with_missing_data = (len(ts_data) - len(ts_data_without_nans)) / len(
         ts_data
     )
+    print(f'The Percentage of rows with missing data is: {perc_row_with_missing_data}')
     if perc_row_with_missing_data > max_percentage_rows_with_missing_values:
         raise Exception(
             'ts_data has too many rows with missing data. Aborting the training script'

@@ -63,7 +63,8 @@ class KrakenRestAPI:
 
         try:
             # Get the trades data
-            trades = data['result'][self.product_id]
+            # print("product_id:", self.product_id, "type:", type(self.product_id))
+            trades = data['result'][self.product_id[0]]
         except KeyError as e:
             logger.error(f'Failed to get trades for pair {self.product_id}: {e}')
             return []
@@ -71,7 +72,7 @@ class KrakenRestAPI:
         # Step 4. Transform the trades data into a list of Trade objects
         trades = [
             Trade.from_kraken_rest_api_response(
-                product_id=self.product_id,
+                product_id=self.product_id[0],
                 price=trade[0],
                 quantity=trade[1],
                 timestamp_sec=trade[2],
