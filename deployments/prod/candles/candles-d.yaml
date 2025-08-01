@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: candles
-  namespace: rwml
+  namespace: ingestion-pipeline
   labels:
     app: candles
 spec:
@@ -17,11 +17,11 @@ spec:
     spec:
       containers:
       - name: candles
-        image: ghcr.io/brunoclbr/candles:0.1.5-beta.@sha256:955035c1e4eff9c583bd6faf3b7380c9e2e4a968d8b98e36b509221488c0d69b
+        image: ghcr.io/brunoclbr/candles:0.1.5-beta.1753442993@sha256:a226503bcacf467c958d6f4d85693a26a5ae0e50f490ec5a003395cfd7d24061
         imagePullPolicy: Always # Make sure we use the latest docker images fronm the github container registry, disregarding the caches images that kubernetes might have.
         env:
         - name: KAFKA_BROKER_ADDRESS
-          value: kafka-c6c8-kafka-bootstrap.strimzi.svc.cluster.local:9092
+          value: kafka-e11b-kafka-bootstrap.kafka.svc.cluster.local:9092
         - name: KAFKA_INPUT_TOPIC
           value: "trades"
         - name: KAFKA_OUTPUT_TOPIC

@@ -5,7 +5,7 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
-  name: training-pipeline-116ge
+  name: training-pipeline
   namespace: training-pipeline
 spec:
   backoffLimit: 0
