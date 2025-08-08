@@ -8,13 +8,13 @@ metadata:
   name: training-pipeline
   namespace: training-pipeline
 spec:
-  backoffLimit: 0
+  backoffLimit: 3
   template:
     spec:
       restartPolicy: Never
       containers:
       - name: training-pipeline
-        image: ghcr.io/brunoclbr/training-pipeline:0.1.5-beta.1753443930@sha256:f7dd22351d03ad5bb7a8505ba586694b3807f4c19678e58564fa691c8ac8fb87
+        image: ghcr.io/brunoclbr/training-pipeline:0.1.5-beta.1754647309@sha256:ef701acfaef3681e5a2629e54e0df6191831185f1539dc7f15ee7b6923007fdd
         imagePullPolicy: Always # Use the local image
         env:
         #
@@ -131,12 +131,6 @@ spec:
             configMapKeyRef:
               name: training-pipeline
               key: MODEL_NAME
-        #
-        - name: N_MODEL_CANDIDATES
-          valueFrom:
-            configMapKeyRef:
-              name: training-pipeline
-              key: N_MODEL_CANDIDATES
         #
         - name: MAX_PERCENTAGE_DIFF_MAE_WRT_BASELINE
           valueFrom:
