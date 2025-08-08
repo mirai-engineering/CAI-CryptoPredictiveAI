@@ -43,11 +43,10 @@ class TrainingConfig(BaseSettings):
         'macdhist_7',
         'obv',
     ]
-    hyperparam_search_trials: int = 5
-    model_name: Optional[str] = 'HuberRegressor'
-    n_model_candidates: int = 1
+    hyperparam_search_trials: int = 0
+    model_name: Optional[str] = None
     max_percentage_diff_mae_wrt_baseline: float = (
-        0.90  # in a real scenario you can reduce this parameter further.
+        0.10  # in a real scenario you can reduce this parameter further.
     )
 
 
