@@ -20,6 +20,7 @@ dependencies = [
     "ydata-profiling>=4.16.1",
     "pydantic-settings>=2.0.0",
     "risingwave-py",
+    "xgboost>=3.0.1",
 ]
 
 [build-system]

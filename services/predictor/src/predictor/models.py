@@ -5,18 +5,31 @@ import mlflow
 import numpy as np
 import optuna
 import pandas as pd
+import xgboost as xgb
 from lazypredict.Supervised import LazyRegressor
 from loguru import logger
-from sklearn.linear_model import HuberRegressor
+from sklearn.linear_model import (
+    BayesianRidge,
+    HuberRegressor,
+    LassoLars,
+    LassoLarsCV,
+    LassoLarsIC,
+    LinearRegression,
+    OrthogonalMatchingPursuit,
+    OrthogonalMatchingPursuitCV,
+    Ridge,
+    RidgeCV,
+    SGDRegressor,
+)
 from sklearn.metrics import mean_absolute_error
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 
 class BaselineModel:
-    def __init__(self):
+    def __init__(self, hyperparam_search_trials=None, hyperparam_splits=None):
         """
-        Provide initial parameters to initialize the model.
+        Provide initial parameters to initialize the model. The hyperparam arguments are just placeholders for consitency
         """
         pass
 
@@ -37,51 +50,16 @@ class BaselineModel:
 # Model = Union[HuberRegressorWithHyperparameterTuning]
 
 
-def get_best_model_candidate(model_candidates_from_best_to_worst: list[str]):
+class ChosenModel:
     """
-    Factory function that returns a model from the given list of model candidates.
-    It returns the first model that is found, which means the best model candidate.
-
-    Args:
-        model_candidates_from_best_to_worst: list[str], the list of model candidates from best to worst
-
-    Returns:
-        Model, the model
+    Set a custom model with or without hyperparameter tuning.
     """
 
-    def _get_one_model(model_name: str):
-        if model_name == 'HuberRegressor':
-            return HuberRegressorWithHyperparameterTuning()
-        else:
-            raise ValueError(f'Model {model_name} not found')
-
-    model = None
-    for model_name in model_candidates_from_best_to_worst:
-        try:
-            model = _get_one_model(model_name)
-            break
-        except Exception as e:
-            logger.error(f'Model {model_name} not found: {e}')
-            continue
-
-    # TODO: we probably need to handle the edge case where no model is found
-
-    return model
-
-
-class HuberRegressorWithHyperparameterTuning:
-    """
-    Fits a HuberRegressor with hyperparameter tuning.
-    """
-
-    def __init__(
-        self,
-        # hyperparam_search_trials: Optional[int] = 0,
-        # hyperparam_splits: Optional[int] = 3
-    ):
+    def __init__(self, model_name):
         """
         Initialize the model.
         """
+        self.model_name = model_name
         self.pipeline = self._get_pipeline()
         self.hyperparam_search_trials = None
         self.hyperparam_splits = None
@@ -119,28 +97,49 @@ class HuberRegressorWithHyperparameterTuning:
             logger.info('Fitting the model with the best hyperparams')
             self.pipeline.fit(X, y)
 
-    def _get_pipeline(self, model_hyperparams: Optional[dict] = None) -> Pipeline:
-        """
-        Get the pipeline.
-        """
-        if model_hyperparams is None:
-            pipeline = Pipeline(
-                steps=[('preprocessor', StandardScaler()), ('model', HuberRegressor())]
-            )
-        else:
-            pipeline = Pipeline(
-                steps=[
-                    ('preprocessor', StandardScaler()),
-                    ('model', HuberRegressor(**model_hyperparams)),
-                ]
-            )
-        return pipeline
-
     def predict(self, X: pd.DataFrame) -> pd.Series:
         """
         Predict the target variable.
         """
         return self.pipeline.predict(X)
+
+    def _get_pipeline(self, model_hyperparams: Optional[dict] = None) -> Pipeline:
+        """
+        Get the pipeline. If no HP provided, use default hyperparameters.
+        """
+
+        # HERE I WANT TO CHOOSE FROM LIST OF POSSIBLE MODEL CANDIDATES, MAYBE MAP WITH DICTIONARY WITH
+        # WITH KEY VALUE PAIRS OF STRING TO IMPORTED MODEL OBJECT. PASS THROUGH SELF
+
+        imported_models = {
+            'HuberRegressor': HuberRegressor(),
+            'SGDRegressor': SGDRegressor(),
+            'BayesianRidge': BayesianRidge(),
+            'Ridge': Ridge(),
+            'RidgeCV': RidgeCV(),
+            'LinearRegression': LinearRegression(),
+            'OrthogonalMatchingPursuit': OrthogonalMatchingPursuit(),
+            'OrthogonalMatchingPursuitCV': OrthogonalMatchingPursuitCV(),
+            'LassoLars': LassoLars(),
+            'LassoLarsCV': LassoLarsCV(),
+            'LassoLarsIC': LassoLarsIC(),
+            'XGBRegressor': xgb.XGBRegressor(),
+        }
+
+        selected_model = imported_models[self.model_name]
+
+        if model_hyperparams is None:
+            pipeline = Pipeline(
+                steps=[('preprocessor', StandardScaler()), ('model', selected_model)]
+            )
+        else:
+            pipeline = Pipeline(
+                steps=[
+                    ('preprocessor', StandardScaler()),
+                    ('model', selected_model(**model_hyperparams)),
+                ]
+            )
+        return pipeline
 
     def _find_best_hyperparams(
         self,
@@ -225,6 +224,44 @@ class HuberRegressorWithHyperparameterTuning:
         return study.best_trial.params
 
 
+# IM USING THESE FUNCTIONS IN THE TRAIN.PY
+# TODO: create a custom type called Model and use it to annotate things like the output of this function.
+# I want to change this function to if first model screening retunrn couple of models to train and compare in mlflow,
+# elif perform HP screening of top candidates and log to mlflow,
+# else I'm using the final model (LSTM) to ship to prod
+
+
+def get_model_obj(input_model_name: str):
+    """
+    Factory function that returns a model object from the given model name.
+    Still need to make sure that if one single model is provided, it is returned as it is.
+    """
+
+    model_options = [
+        'HuberRegressor',
+        'BayesianRidge',
+        'RidgeCV',
+        'LinearRegression',
+        'OrthogonalMatchingPursuit',
+        'OrthogonalMatchingPursuitCV',
+        'LassoLars',
+        'LassoLarsCV',
+        'LassoLarsIC',
+    ]
+    # if the model proposed by the lazy regressor is not in this pre-defined list it needs to be imported beforehand and added to the code
+    model_name = input_model_name if input_model_name in model_options else None
+
+    if model_name is not None:
+        return ChosenModel(model_name=model_name)
+
+    else:
+        print(
+            f"[INFO] Model '{input_model_name}' not in supported models list. Skipping... and returning Baseline model instead"
+        )
+        return BaselineModel()
+        # raise ValueError(f'Model {model_name} not found')
+
+
 def get_model_candidates(
     X_train: pd.DataFrame,
     y_train: pd.Series,
@@ -271,14 +308,3 @@ def get_model_candidates(
     model_candidates = models['Model'].tolist()[:n_candidates]
 
     return model_candidates
-
-
-# TODO: create a custom type called Model and use it to annotate things like the output of this function
-def get_model_obj(model_name: str):
-    """
-    Factory function that returns a model object from the given model name.
-    """
-    if model_name == 'HuberRegressor':
-        return HuberRegressorWithHyperparameterTuning()
-    else:
-        raise ValueError(f'Model {model_name} not found')
