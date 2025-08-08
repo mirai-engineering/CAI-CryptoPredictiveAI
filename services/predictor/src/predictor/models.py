@@ -33,7 +33,13 @@ class BaselineModel:
         """
         pass
 
-    def fit(self, X, y, hyperparam_search_trials=None, hyperparam_splits=None):
+    def fit(
+        self,
+        X,
+        y,
+        hyperparam_search_trials: Optional[int] = 0,
+        hyperparam_splits: Optional[int] = 3,
+    ):
         """
         Fit the model to the data.
         """
