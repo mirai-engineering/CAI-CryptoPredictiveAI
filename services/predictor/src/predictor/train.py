@@ -125,12 +125,18 @@ def train(
     features: list[str],
     hyperparam_search_trials: int,
     model_name: Optional[str] = None,
-    n_model_candidates: Optional[int] = 1,
     max_percentage_diff_mae_wrt_baseline: Optional[float] = 0.10,
 ):
     """
     Trains a predictor for the given pair and data, and if the model is good, it pushes
-    it to the model registry.
+    it to the model registry. Each experiment is named after the currency pair, candle duration and prediction horizon.
+
+    # Things we want to log to MLflow:
+    # - The data we used to train the model
+    # - Parameters (features, pair, training_data_horizon_days, candle_seconds, prediction_horizon_seconds, train_test_split_ratio, data_profiling_n_rows, model_name, max_percentage_diff_mae_wrt_baseline)
+    # - EDA report
+    # - Model performance metrics (test_mae_baseline, test_mae)
+
     """
     logger.info('Starting training process')
 
@@ -143,145 +149,165 @@ def train(
         get_model_name(pair, candle_seconds, prediction_horizon_seconds)
     )
 
-    # Things we want to log to MLflow:
-    # - The data we used to train the model
-    # - Parameters
-    # - EDA report
-    # - Model performance metrics
+    # Step 1. Load technical indicators data from RisingWave
+    ts_data = load_ts_data_from_risingwave(
+        host=risingwave_host,
+        port=risingwave_port,
+        user=risingwave_user,
+        password=risingwave_password,
+        database=risingwave_database,
+        table=risingwave_table,
+        pair=pair,
+        training_data_horizon_days=training_data_horizon_days,
+        candle_seconds=candle_seconds,
+    )
+    # keep only the `features`
+    ts_data = ts_data[features]
 
-    with mlflow.start_run():
-        logger.info('Starting MLflow run')
+    # Step 2. Add target column
+    ts_data['target'] = ts_data['close'].shift(
+        -prediction_horizon_seconds // candle_seconds
+    )  # the model sees features at time t and learns to predict the close price h steps ahead.
 
-        # Input to the training process
-        mlflow.log_param('features', features)
-        mlflow.log_param('pair', pair)
-        mlflow.log_param('training_data_horizon_days', training_data_horizon_days)
-        mlflow.log_param('candle_seconds', candle_seconds)
-        mlflow.log_param('prediction_horizon_seconds', prediction_horizon_seconds)
-        mlflow.log_param('train_test_split_ratio', train_test_split_ratio)
-        mlflow.log_param('data_profiling_n_rows', data_profiling_n_rows)
-        if model_name:
-            mlflow.log_param('model_name', model_name)
-        mlflow.log_param(
-            'max_percentage_diff_mae_wrt_baseline', max_percentage_diff_mae_wrt_baseline
-        )
+    # Step 3. Validate the data
+    ts_data = validate_data(ts_data, max_percentage_rows_with_missing_values)
+    # Step 4. Split into train/test
+    train_size = int(len(ts_data) * train_test_split_ratio)
+    train_data = ts_data[:train_size]
+    test_data = ts_data[train_size:]
+    # Step 5. Split data into features and target
+    X_train = train_data.drop(columns=['target'])
+    y_train = train_data['target']
+    X_test = test_data.drop(columns=['target'])
+    y_test = test_data['target']
 
-        # Step 1. Load technical indicators data from RisingWave
-        ts_data = load_ts_data_from_risingwave(
-            host=risingwave_host,
-            port=risingwave_port,
-            user=risingwave_user,
-            password=risingwave_password,
-            database=risingwave_database,
-            table=risingwave_table,
-            pair=pair,
-            training_data_horizon_days=training_data_horizon_days,
-            candle_seconds=candle_seconds,
-        )
-        # keep only the `features`
-        ts_data = ts_data[features]
+    # Step 6. Profile the data. This will pushed to mlflow within each run but is calculated only once
+    ts_data_to_profile = (
+        ts_data.head(data_profiling_n_rows) if data_profiling_n_rows else ts_data
+    )
+    generate_exploratory_data_analysis_report(
+        ts_data_to_profile, output_html_path=eda_report_html_path
+    )
 
-        # Step 2. Add target column
-        ts_data['target'] = ts_data['close'].shift(
-            -prediction_horizon_seconds // candle_seconds
-        )  # the model sees features at time t and learns to predict the close price h steps ahead.
+    def training_loop(model, current_model_name: str):
+        """
+        Args:
+            model: The model object to train.
+            current_model_name: The name of the current model.
 
-        # log the data to MLflow
-        dataset = mlflow.data.from_pandas(ts_data)
-        mlflow.log_input(dataset, context='training')
+        Calling the fit method will overwrite the hyperparam_search_trials which is set to 0 as default if HP tuning desired.
+        Calling training_loop will return nothing and log the experiments to mlflow and store the model in the model registry.
 
-        # log dataset size
-        mlflow.log_param('ts_data_shape', ts_data.shape)
+        Train the chosen model with or without hyperparameter search. This can be already achieved by setting hyperparam_search_trials to 0
+        if without or non-zero if with. Best practice would be to use lazy regressor to get
+        model candidates and log them to mlflow. On a second run pick the best models out of the best and perform HP search on them.
+        I want to try SARIMA and LSTM regardless. Lasso for feature engineering. So the result of get_model_obj should be in fact an iterable
+        list of models and hence the next part should iterate over theat list and log them.
 
-        # Step 3. Validate the data
-        ts_data = validate_data(ts_data, max_percentage_rows_with_missing_values)
+        TODO: add third validation split for "real" training, i.e. when shipping to prod. Scaling is being handled by scikit's pipeline
+        """
+        with mlflow.start_run(nested=True):
+            # since I'm running multiple runs within the same mlflow experiment, I need to set nested to True
+            # to avoid mlflow from failing.
 
-        # Homework:
-        # Plot data drift of the current data vs the data used by the model in the model registry.
-        # from predictor.data_validation import generate_data_drift_report
+            logger.info('Starting MLflow run')
 
-        # generate_data_drift_report(ts_data, model_name) does nothing so far
-
-        # Step 4. Profile the data
-        ts_data_to_profile = (
-            ts_data.head(data_profiling_n_rows) if data_profiling_n_rows else ts_data
-        )
-        generate_exploratory_data_analysis_report(
-            ts_data_to_profile, output_html_path=eda_report_html_path
-        )
-        logger.info('Pushing EDA report to MLflow')
-        mlflow.log_artifact(local_path=eda_report_html_path, artifact_path='eda_report')
-
-        # Step 5. Split into train/test
-        train_size = int(len(ts_data) * train_test_split_ratio)
-        train_data = ts_data[:train_size]
-        test_data = ts_data[train_size:]
-        mlflow.log_param('train_data_shape', train_data.shape)
-        mlflow.log_param('test_data_shape', test_data.shape)
-
-        # Step 6. Split data into features and target
-        X_train = train_data.drop(columns=['target'])
-        y_train = train_data['target']
-        X_test = test_data.drop(columns=['target'])
-        y_test = test_data['target']
-        mlflow.log_param('X_train_shape', X_train.shape)
-        mlflow.log_param('y_train_shape', y_train.shape)
-        mlflow.log_param('X_test_shape', X_test.shape)
-        mlflow.log_param('y_test_shape', y_test.shape)
-
-        # Step 7. Build a dummy baseline model
-        baseline_model = BaselineModel()
-        y_pred = baseline_model.predict(X_test)
-        test_mae_baseline = mean_absolute_error(y_test, y_pred)
-        mlflow.log_metric('test_mae_baseline', test_mae_baseline)
-        logger.info(f'Test MAE for Baseline model: {test_mae_baseline:.4f}')
-
-        # Step 8. Find the best candidate model, if `model_name` is not provided.
-        if model_name is None:
-            # We fit N models with default hyperparameters for the given
-            # (X_train, y_train), and evaluate them with (X_test, y_test)
-            # to find the best `n_model_candidates` models
-
-            # In the future I still need to do all the feature engineering part properly:
-            # scaling, transformations, dimensionality etc (without leaking from val/test!)
-
-            model_names = get_model_candidates(
-                X_train, y_train, X_test, y_test, n_candidates=n_model_candidates
+            # Input to the training process
+            mlflow.log_param('features', features)
+            mlflow.log_param('pair', pair)
+            mlflow.log_param('training_data_horizon_days', training_data_horizon_days)
+            mlflow.log_param('candle_seconds', candle_seconds)
+            mlflow.log_param('prediction_horizon_seconds', prediction_horizon_seconds)
+            mlflow.log_param('train_test_split_ratio', train_test_split_ratio)
+            mlflow.log_param('data_profiling_n_rows', data_profiling_n_rows)
+            mlflow.log_param('model_name', current_model_name)
+            mlflow.log_param(
+                'max_percentage_diff_mae_wrt_baseline',
+                max_percentage_diff_mae_wrt_baseline,
             )
 
-            # TODO: this is a hack that works when we have only one candidate model
-            # How to modify this code to use a list of candiate models, and adjust
-            # their hyperparameters in the next step?
-            model_name = model_names[0]
+            # log the data to MLflow
+            dataset = mlflow.data.from_pandas(ts_data)
+            mlflow.log_input(dataset, context='training')
 
+            # log dataset size
+            mlflow.log_param('ts_data_shape', ts_data.shape)
+
+            # TODO:
+            # Plot data drift of the current data vs the data used by the model in the model registry.
+            # from predictor.data_validation import generate_data_drift_report
+            # generate_data_drift_report(ts_data, model_name) does nothing so far
+
+            logger.info('Pushing EDA report to MLflow')
+            mlflow.log_artifact(
+                local_path=eda_report_html_path, artifact_path='eda_report'
+            )
+            mlflow.log_param('train_data_shape', train_data.shape)
+            mlflow.log_param('test_data_shape', test_data.shape)
+            mlflow.log_param('X_train_shape', X_train.shape)
+            mlflow.log_param('y_train_shape', y_train.shape)
+            mlflow.log_param('X_test_shape', X_test.shape)
+            mlflow.log_param('y_test_shape', y_test.shape)
+
+            # Step 7.1 Build a dummy baseline model
+            baseline_model = BaselineModel()
+            y_pred = baseline_model.predict(X_test)
+            test_mae_baseline = mean_absolute_error(y_test, y_pred)
+            mlflow.log_metric('test_mae_baseline', test_mae_baseline)
+            logger.info(f'Test MAE for Baseline model: {test_mae_baseline:.4f}')
+            logger.info(
+                f'Start training model {model} with hyperparameter search if env variable is set'
+            )
+
+            # Step 8.1 Train the current model
+            model.fit(
+                X_train, y_train, hyperparam_search_trials=hyperparam_search_trials
+            )
+
+            # Step 8.2 Validate the model
+            y_pred = model.predict(X_test)
+            test_mae = mean_absolute_error(y_test, y_pred)
+            mlflow.log_metric('test_mae', test_mae)
+            logger.info(f'Test MAE for model {model}: {test_mae:.4f}')
+
+            # Step 8.2 Push the model to the model registry
+            mae_diff = (test_mae - test_mae_baseline) / test_mae_baseline
+            if mae_diff <= max_percentage_diff_mae_wrt_baseline:
+                logger.info(
+                    f'Model MAE is {mae_diff:.4f} < {max_percentage_diff_mae_wrt_baseline}'
+                )
+                logger.info('Pushing model to the registry')
+                model_name = get_model_name(
+                    pair, candle_seconds, prediction_horizon_seconds
+                )
+                push_model(model, X_test, model_name)
+            else:
+                logger.info(
+                    f'The model {model_name} MAE is {mae_diff:.4f} > {max_percentage_diff_mae_wrt_baseline}'
+                )
+                logger.info('Model NOT PUSHED to the registry')
+
+    # Step 7. Find the best candidate model
+    # if `model_name` is not provided. --> no need to define n_candidates if model_name provided
+    if model_name is None:
+        # We fit N models with default hyperparameters for the given
+        # (X_train, y_train), and evaluate them with (X_test, y_test)
+        # to find the best `n_model_candidates` models
+
+        n_model_candidates = 2
+        # calling get_model_candidates already triggers mlflow logging !
+        model_candidates = get_model_candidates(
+            X_train, y_train, X_test, y_test, n_candidates=n_model_candidates
+        )
+        # print(f'model_candidates: {model_candidates}')
+        # model_name = model_names  # and call get_model_obj for each model_name for logging/training in mlflow
+        for current_model in model_candidates:
+            model = get_model_obj(current_model)
+            training_loop(model, current_model)
+    else:
+        # If I want to train a production-worthy model
         model = get_model_obj(model_name)
-
-        # Step 9. Train the choosen model with hyperparameter search.
-        logger.info(f'Start training model {model} with hyperparameter search')
-        model.fit(X_train, y_train, hyperparam_search_trials=hyperparam_search_trials)
-
-        # Step 10. Validate the model
-        y_pred = model.predict(X_test)
-        test_mae = mean_absolute_error(y_test, y_pred)
-        mlflow.log_metric('test_mae', test_mae)
-        logger.info(f'Test MAE for model {model}: {test_mae:.4f}')
-
-        # Step 11. Push the model to the model registry
-        mae_diff = (test_mae - test_mae_baseline) / test_mae_baseline
-        if mae_diff <= max_percentage_diff_mae_wrt_baseline:
-            logger.info(
-                f'Model MAE is {mae_diff:.4f} < {max_percentage_diff_mae_wrt_baseline}'
-            )
-            logger.info('Pushing model to the registry')
-            model_name = get_model_name(
-                pair, candle_seconds, prediction_horizon_seconds
-            )
-            push_model(model, X_test, model_name)
-        else:
-            logger.info(
-                f'The model {model_name} MAE is {mae_diff:.4f} > {max_percentage_diff_mae_wrt_baseline}'
-            )
-            logger.info('Model NOT PUSHED to the registry')
+        training_loop(model, model_name)
 
 
 if __name__ == '__main__':
@@ -306,6 +332,5 @@ if __name__ == '__main__':
         features=config.features,
         hyperparam_search_trials=config.hyperparam_search_trials,
         model_name=config.model_name,
-        n_model_candidates=config.n_model_candidates,
         max_percentage_diff_mae_wrt_baseline=config.max_percentage_diff_mae_wrt_baseline,
     )
