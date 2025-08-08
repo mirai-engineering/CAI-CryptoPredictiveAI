@@ -20,7 +20,7 @@ import mlflow
 import pandas as pd
 from loguru import logger
 from risingwave import OutputFormat, RisingWave, RisingWaveConnOptions
-from sklearn.metrics import mean_absolute_error
+from sklearn.metrics import mean_absolute_error, r2_score
 
 from predictor.data_validation import validate_data
 from predictor.model_registry import get_model_name, push_model
@@ -267,8 +267,11 @@ def train(
             # Step 8.2 Validate the model
             y_pred = model.predict(X_test)
             test_mae = mean_absolute_error(y_test, y_pred)
+            r2 = r2_score(y_pred, y_test)
             mlflow.log_metric('test_mae', test_mae)
+            mlflow.log_metric('R2 score', r2)
             logger.info(f'Test MAE for model {model}: {test_mae:.4f}')
+            logger.info(f'Test R2 score for model {model}: {r2:.4f}')
 
             # Step 8.2 Push the model to the model registry
             mae_diff = (test_mae - test_mae_baseline) / test_mae_baseline
@@ -283,7 +286,7 @@ def train(
                 push_model(model, X_test, model_name)
             else:
                 logger.info(
-                    f'The model {model_name} MAE is {mae_diff:.4f} > {max_percentage_diff_mae_wrt_baseline}'
+                    f'The model {current_model_name} MAE is {mae_diff:.4f} > {max_percentage_diff_mae_wrt_baseline}'
                 )
                 logger.info('Model NOT PUSHED to the registry')
 
@@ -294,7 +297,7 @@ def train(
         # (X_train, y_train), and evaluate them with (X_test, y_test)
         # to find the best `n_model_candidates` models
 
-        n_model_candidates = 2
+        n_model_candidates = 5
         # calling get_model_candidates already triggers mlflow logging !
         model_candidates = get_model_candidates(
             X_train, y_train, X_test, y_test, n_candidates=n_model_candidates

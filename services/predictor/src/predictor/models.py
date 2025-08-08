@@ -33,7 +33,7 @@ class BaselineModel:
         """
         pass
 
-    def fit(self, X, y):
+    def fit(self, X, y, hyperparam_search_trials=None, hyperparam_splits=None):
         """
         Fit the model to the data.
         """
@@ -108,8 +108,7 @@ class ChosenModel:
         Get the pipeline. If no HP provided, use default hyperparameters.
         """
 
-        # HERE I WANT TO CHOOSE FROM LIST OF POSSIBLE MODEL CANDIDATES, MAYBE MAP WITH DICTIONARY WITH
-        # WITH KEY VALUE PAIRS OF STRING TO IMPORTED MODEL OBJECT. PASS THROUGH SELF
+        # TODO: Use something like Lasso and PCA to reduce the dimensionality of the input features
 
         imported_models = {
             'HuberRegressor': HuberRegressor(),
@@ -239,7 +238,9 @@ def get_model_obj(input_model_name: str):
 
     model_options = [
         'HuberRegressor',
+        'SGDRegressor',
         'BayesianRidge',
+        'Ridge',
         'RidgeCV',
         'LinearRegression',
         'OrthogonalMatchingPursuit',
@@ -247,6 +248,7 @@ def get_model_obj(input_model_name: str):
         'LassoLars',
         'LassoLarsCV',
         'LassoLarsIC',
+        'XGBRegressor',
     ]
     # if the model proposed by the lazy regressor is not in this pre-defined list it needs to be imported beforehand and added to the code
     model_name = input_model_name if input_model_name in model_options else None
