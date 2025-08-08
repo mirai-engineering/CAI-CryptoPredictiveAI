@@ -11,4 +11,4 @@ namespace: training-pipeline
 resources:
   - ./training-pipeline-cm.yaml
   - ./training-pipeline-j.yaml
-  # - ./training-pipeline-cj.yaml
+  #- ./training-pipeline-cj.yaml
