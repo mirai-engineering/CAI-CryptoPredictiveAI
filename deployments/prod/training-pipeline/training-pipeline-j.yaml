@@ -8,13 +8,13 @@ metadata:
   name: training-pipeline
   namespace: training-pipeline
 spec:
-  backoffLimit: 3
+  backoffLimit: 0
   template:
     spec:
       restartPolicy: Never
       containers:
       - name: training-pipeline
-        image: ghcr.io/brunoclbr/training-pipeline:0.1.5-beta.1754647309@sha256:ef701acfaef3681e5a2629e54e0df6191831185f1539dc7f15ee7b6923007fdd
+        image: ghcr.io/brunoclbr/training-pipeline:0.1.5-beta.1754655554@sha256:42b6ab5a5e42ab4102afb38f3539d1167cf7362f9b58acc2c9fd3d015a36acf2
         imagePullPolicy: Always # Use the local image
         env:
         #
