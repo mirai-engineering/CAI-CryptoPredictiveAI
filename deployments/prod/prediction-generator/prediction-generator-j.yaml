@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
       - name: prediction-generator
-        image: prediction-generator:dev
-        imagePullPolicy: Never # Use the local image
+        image: ghcr.io/brunoclbr/prediction-generator:0.1.5-beta.1754826643@sha256:3e0d02dad339a27809b4c3f0456181bda13cb50e8f1e4c713f7ed53129257ed2
+        imagePullPolicy: Always
         env:
         #
         - name: MLFLOW_TRACKING_URI

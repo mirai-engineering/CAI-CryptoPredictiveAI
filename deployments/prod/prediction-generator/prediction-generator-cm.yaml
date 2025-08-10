@@ -2,7 +2,7 @@
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: prediction-generator-rt54
+  name: prediction-generator
   namespace: inference-pipeline
 data:
   # Quote them!!! - by Marius
@@ -20,4 +20,4 @@ data:
   PAIR: "ETH/USD"
   PREDICTION_HORIZON_SECONDS: "300"
   CANDLE_SECONDS: "60"
-  MODEL_VERSION: "latest"
+  MODEL_VERSION: "14"
