@@ -62,10 +62,10 @@ class PredictorConfig(BaseSettings):
     risingwave_database: str = 'dev'
     risingwave_schema: str = 'public'
     risingwave_input_table: str = 'technical_indicators'
-    risingwave_output_table: str = 'price_predictions'
+    risingwave_output_table: str = 'test_predictions'
 
     pair: str = 'ETH/USD'
-    prediction_horizon_seconds: int = 300
+    prediction_horizon_seconds: int = 604800  # 86400 sec per day 604800 per week
     candle_seconds: int = 60
     model_version: Optional[str] = '14'
 
