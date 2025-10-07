@@ -61,63 +61,6 @@ These engineered features provide the model with domain-specific knowledge, sign
 
 ---
 
-## LLM-Powered Sentiment Analysis
-
-### Privacy-First Architecture with Open-Source Models
-
-One of the most innovative aspects of this system is the **sentiment analysis pipeline** that runs entirely on-premises, ensuring complete data privacy.
-
-<p align="center">
-  <img src="images/input_candles.png" width="900" alt="Input Candle Data">
-</p>
-
-**The Challenge:** Market sentiment significantly impacts cryptocurrency prices, but traditional sentiment analysis either relies on proprietary APIs (sending sensitive data to third parties) or uses simple keyword-based approaches (missing nuance).
-
-**Our Solution:** 
-1. **BAML (Behavioral Annotation Markup Language)**: We use BAML to define structured extraction schemas, ensuring the LLM returns type-safe, validated sentiment scores. This eliminates the brittle string parsing typical of LLM integrations.
-
-```python
-# Sentiment extraction schema defined in BAML
-class SentimentScore {
-  coin string
-  score "1" | "-1"  # Bullish or bearish
-}
-
-class SentimentScores {
-  scores SentimentScore[]
-  reason string  # LLM's analytical reasoning
-}
-```
-
-2. **Ollama Integration**: Instead of cloud APIs (OpenAI, Anthropic), we deploy models locally via Ollama:
-   - **DeepSeek-R1**: 7B parameter model with strong reasoning capabilities
-   - **Llama variants**: Alternative models for different latency/accuracy trade-offs
-   
-3. **OpenAI-Compatible Interface**: The `SentimentExtractor` class uses Ollama's OpenAI-compatible endpoint, making it trivial to swap models or fall back to cloud providers if needed:
-
-```python
-# Configure for on-premises LLM
-sentiment_extractor = SentimentExtractor(
-    model='openai-generic/deepseek-r1:7b',
-    base_url='http://localhost:11434/v1'  # Local Ollama instance
-)
-```
-
-**The Flow:**
-```
-News API → Kafka (news topic) → LLM Sentiment Extraction → Kafka (sentiment_scores) → RisingWave (SQL storage)
-```
-
-**Why This Matters:**
-- **Data Privacy**: Financial news and market signals never leave your infrastructure
-- **Cost Control**: No per-token pricing—run unlimited inferences at fixed compute cost
-- **Latency**: Local inference avoids network round-trips to external APIs
-- **Customization**: Fine-tune models on domain-specific crypto terminology
-
-The sentiment scores become additional features for the prediction model, capturing market psychology alongside technical indicators.
-
----
-
 ## Data Storage & Feature Store
 
 ### RisingWave: Streaming Database for Real-Time Features
@@ -193,6 +136,63 @@ The training pipeline runs as a Kubernetes CronJob, periodically retraining mode
 - Linear models: Ridge, Lasso, Bayesian Ridge (fast, interpretable baselines)
 - Tree-based: XGBoost (best performance on tabular financial data)
 - Ensemble methods with custom time-series validation
+
+---
+
+## LLM-Powered Sentiment Analysis
+
+### Privacy-First Architecture with Open-Source Models
+
+One of the most innovative aspects of this system is the **sentiment analysis pipeline** that runs entirely on-premises, ensuring complete data privacy.
+
+<p align="center">
+  <img src="images/input_candles.png" width="900" alt="Input Candle Data">
+</p>
+
+**The Challenge:** Market sentiment significantly impacts cryptocurrency prices, but traditional sentiment analysis either relies on proprietary APIs (sending sensitive data to third parties) or uses simple keyword-based approaches (missing nuance).
+
+**Our Solution:** 
+1. **BAML (Behavioral Annotation Markup Language)**: We use BAML to define structured extraction schemas, ensuring the LLM returns type-safe, validated sentiment scores. This eliminates the brittle string parsing typical of LLM integrations.
+
+```python
+# Sentiment extraction schema defined in BAML
+class SentimentScore {
+  coin string
+  score "1" | "-1"  # Bullish or bearish
+}
+
+class SentimentScores {
+  scores SentimentScore[]
+  reason string  # LLM's analytical reasoning
+}
+```
+
+2. **Ollama Integration**: Instead of cloud APIs (OpenAI, Anthropic), we deploy models locally via Ollama:
+   - **DeepSeek-R1**: 7B parameter model with strong reasoning capabilities
+   - **Llama variants**: Alternative models for different latency/accuracy trade-offs
+   
+3. **OpenAI-Compatible Interface**: The `SentimentExtractor` class uses Ollama's OpenAI-compatible endpoint, making it trivial to swap models or fall back to cloud providers if needed:
+
+```python
+# Configure for on-premises LLM
+sentiment_extractor = SentimentExtractor(
+    model='openai-generic/deepseek-r1:7b',
+    base_url='http://localhost:11434/v1'  # Local Ollama instance
+)
+```
+
+**The Flow:**
+```
+News API → Kafka (news topic) → LLM Sentiment Extraction → Kafka (sentiment_scores) → RisingWave (SQL storage)
+```
+
+**Why This Matters:**
+- **Data Privacy**: Financial news and market signals never leave your infrastructure
+- **Cost Control**: No per-token pricing—run unlimited inferences at fixed compute cost
+- **Latency**: Local inference avoids network round-trips to external APIs
+- **Customization**: Fine-tune models on domain-specific crypto terminology
+
+The sentiment scores become additional features for the prediction model, capturing market psychology alongside technical indicators.
 
 ---
 
