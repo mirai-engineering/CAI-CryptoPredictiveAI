@@ -200,7 +200,7 @@ The sentiment scores become additional features for the prediction model, captur
 
 ### Real-Time Prediction Generation
 
-The inference architecture is designed for low-latency, high-throughput prediction serving.
+The inference architecture is designed for low-latency, high-throughput prediction serving. The prediction horizon was set to 300s.
 
 <p align="center">
   <img src="images/grafana_predict_vs_target.png" width="900" alt="Predictions vs Actual Prices">
@@ -311,7 +311,7 @@ This project uses [**uv**](https://docs.astral.sh/uv/) for Python package manage
 
 1. **Clone the repository:**
 ```bash
-git clone https://github.com/brunoclbr/CryptoPredictiveAI.git
+git clone https://github.com/mirai-engineering/CAI-CryptoPredictiveAI
 cd CryptoPredictiveAI
 ```
 
