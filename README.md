@@ -4,6 +4,10 @@
 
 This project demonstrates a complete, production-ready machine learning system for cryptocurrency price prediction. Built from the ground up with MLOps best practices, it showcases how modern enterprises deploy, monitor, and scale real-time ML inference systems while maintaining data privacy and operational excellence.
 
+<p align="center">
+  <img src="images/input_candles.png" width="900" alt="Input Candle Data">
+</p>
+
 **What makes this unique:**
 - **Privacy-first LLM integration**: On-premises sentiment analysis using open-source models (DeepSeek, Llama) via Ollama—no data leaves your infrastructure
 - **Cloud-native architecture**: Fully containerized, Kubernetes-orchestrated microservices designed for scalability and resilience
@@ -144,10 +148,6 @@ The training pipeline runs as a Kubernetes CronJob, periodically retraining mode
 ### Privacy-First Architecture with Open-Source Models
 
 One of the most innovative aspects of this system is the **sentiment analysis pipeline** that runs entirely on-premises, ensuring complete data privacy.
-
-<p align="center">
-  <img src="images/input_candles.png" width="900" alt="Input Candle Data">
-</p>
 
 **The Challenge:** Market sentiment significantly impacts cryptocurrency prices, but traditional sentiment analysis either relies on proprietary APIs (sending sensitive data to third parties) or uses simple keyword-based approaches (missing nuance).
 
