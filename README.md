@@ -344,7 +344,7 @@ cd deployments/dev/kind
 4. **Deploy services:**
 ```bash
 # Deploy all services to Kubernetes
-make deploy-dev
+make deploy service=service env=env
 ```
 
 5. **Configure RisingWave tables:**
@@ -353,10 +353,10 @@ make deploy-dev
 kubectl port-forward svc/risingwave-frontend 4567:4567 -n risingwave
 
 # Connect and create tables
-psql -h localhost -p 4567 -d dev -U root -f services/technical_indicators/query.sql
-psql -h localhost -p 4567 -d dev -U root -f services/news_sentiment/query.sql
+psql -h localhost -p 4567 -d dev -U root 
+psql -h localhost -p 4567 -d dev -U root 
 ```
-
+To create the tables we manually copy each sql query in the service into the Postgres interactive session
 6. **Install Ollama and pull models (for sentiment analysis):**
 ```bash
 # Install Ollama (macOS/Linux)
