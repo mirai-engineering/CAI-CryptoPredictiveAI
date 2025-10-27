@@ -341,8 +341,11 @@ cd deployments/dev/kind
 ./install_grafana.sh
 ```
 
-4. **Deploy services:**
+4. **Push Docker image & Deploy services:**
 ```bash
+# Push Docker Image
+make build-and-push service=service env=env
+
 # Deploy all services to Kubernetes
 make deploy service=service env=env
 ```
